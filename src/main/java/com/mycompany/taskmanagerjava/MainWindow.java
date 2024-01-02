@@ -1,5 +1,6 @@
 package com.mycompany.taskmanagerjava;
 
+import javax.swing.Timer;
 import oshi.SystemInfo;
 
 /**
@@ -17,6 +18,11 @@ public class MainWindow extends javax.swing.JFrame {
         controller = Controller.getInstance(si);
         
         ShowGlobalInformation();
+                
+        Timer timer = new Timer(1000, e -> {
+            Update();
+        });
+        timer.start();
     }
 
     /**
@@ -249,4 +255,12 @@ public class MainWindow extends javax.swing.JFrame {
         lblInfoDisk.setText(controller.getDisk().getInfo());
         lblInfoGPU.setText(controller.getGPU().getInfo());
     }
+
+    private void Update() {
+        lblLoadCPU.setText(controller.getCPU().getPercentUsageCPU());
+        lblLoadRAM.setText(controller.getRAM().getUsedSpace() + " / " + controller.getRAM().getTotalSpace());
+        lblLoadDisk.setText(controller.getDisk().getUsedSpace() + " / " + controller.getDisk().getTotalSpace());
+    }
+    
+   
 }
