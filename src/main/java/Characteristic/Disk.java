@@ -16,7 +16,7 @@ public class Disk {
         diskStore = si.getHardware().getDiskStores().getFirst();
     }
 
-    public String getName()
+    public String getInfo()
     {
         return diskStore.getModel();
     }

@@ -18,7 +18,7 @@ public class CPU {
         oldTicks = new long[TickType.values().length];
     }
     
-    public String getName()
+    public String getInfo()
     {
         return processor.getProcessorIdentifier().getName();
     }

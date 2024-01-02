@@ -36,7 +36,7 @@ public class RAM {
      * для каждой плашки памяти отдельно 
      * (Производитель + Тип памяти + Частота + Объём)
      */
-    public String getInfoRAM()
+    public String getInfo()
     {
         ArrayList<String> detailList = new ArrayList<>();
 
