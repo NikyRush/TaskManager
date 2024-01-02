@@ -173,9 +173,9 @@ public class MainWindow extends javax.swing.JFrame {
     // End of variables declaration//GEN-END:variables
 
     private void ShowGlobalInformation() {
-        lblInfoCPU.setText(controller.getCPU().getName());
-        lblInfoRAM.setText(controller.getRAM().getInfoRAM());
-        lblInfoDisk.setText(controller.getDisk().getName());
+        lblInfoCPU.setText(controller.getCPU().getInfo());
+        lblInfoRAM.setText(controller.getRAM().getInfo());
+        lblInfoDisk.setText(controller.getDisk().getInfo());
         lblInfoGPU.setText(controller.getGPU().getInfo());
     }
 }
