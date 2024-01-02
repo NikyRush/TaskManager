@@ -38,12 +38,12 @@ public class Controller {
         return instance;
     }
 
-    public CPU getCpu() { return cpu; }
+    public CPU getCPU() { return cpu; }
 
-    public RAM getRam() { return ram; }
+    public RAM getRAM() { return ram; }
 
     public Disk getDisk() { return disk; }
 
-    public GPU getGpu() { return gpu; }
+    public GPU getGPU() { return gpu; }
     
 }
