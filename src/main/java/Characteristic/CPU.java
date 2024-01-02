@@ -2,28 +2,32 @@ package Characteristic;
 
 import oshi.SystemInfo;
 import oshi.hardware.CentralProcessor;
+import oshi.hardware.CentralProcessor.TickType;
 
 /**
  *
  * @author Admin
  */
 public class CPU {
-    private String name;
     private CentralProcessor processor;
+    private long[] oldTicks;
     
     public CPU(SystemInfo si)
     {
         this.processor = si.getHardware().getProcessor();
-        this.name = processor.getProcessorIdentifier().getName();
+        oldTicks = new long[TickType.values().length];
     }
     
     public String getName()
     {
-        return name;
+        return processor.getProcessorIdentifier().getName();
     }
     
-    public CentralProcessor getProcessor()
-    {
-        return processor;
-    }
+     public String getPercentUsageCPU()
+     {
+         double usage = processor.getSystemCpuLoadBetweenTicks(oldTicks) * 100d;
+         oldTicks = processor.getSystemCpuLoadTicks();
+         return String.format("%.2f%%", usage);
+     }
+    
 }
