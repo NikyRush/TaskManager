@@ -9,7 +9,7 @@ import oshi.hardware.CentralProcessor.TickType;
  * @author Admin
  */
 public class CPU {
-    private CentralProcessor processor;
+    private final CentralProcessor processor;
     private long[] oldTicks;
     
     public CPU(SystemInfo si)
