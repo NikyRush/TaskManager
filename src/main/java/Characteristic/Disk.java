@@ -1,5 +1,8 @@
 package Characteristic;
 
+import java.io.IOException;
+import java.nio.file.FileStore;
+import java.nio.file.FileSystems;
 import oshi.SystemInfo;
 import oshi.hardware.HWDiskStore;
 import oshi.util.FormatUtil;
@@ -28,7 +31,13 @@ public class Disk {
     
     public String getUsedSpace()
     {
-        long used = (diskStore.getWriteBytes() + diskStore.getReadBytes()) / 2;
+        long used = 0;
+        try {
+            for (FileStore store : FileSystems.getDefault().getFileStores())
+                used += store.getTotalSpace() - store.getUsableSpace();
+        } catch (IOException e) {
+            used = 0;
+        }
         return FormatUtil.formatBytes(used);
     }
 }
