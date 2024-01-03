@@ -1,6 +1,7 @@
 package com.mycompany.taskmanagerjava;
 
 import javax.swing.Timer;
+import javax.swing.table.DefaultTableModel;
 import oshi.SystemInfo;
 
 /**
@@ -292,6 +293,8 @@ public class MainWindow extends javax.swing.JFrame {
         lblLoadCPU.setText(controller.getCPU().getPercentUsageCPU());
         lblLoadRAM.setText(controller.getRAM().getUsedSpace() + " / " + controller.getRAM().getTotalSpace());
         lblLoadDisk.setText(controller.getDisk().getUsedSpace() + " / " + controller.getDisk().getTotalSpace());
+        
+        controller.UpdateTableProcesses((DefaultTableModel)tblProcesses.getModel());
     }
     
    

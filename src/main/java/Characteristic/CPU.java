@@ -23,11 +23,15 @@ public class CPU {
         return processor.getProcessorIdentifier().getName();
     }
     
-     public String getPercentUsageCPU()
-     {
-         double usage = processor.getSystemCpuLoadBetweenTicks(oldTicks) * 100d;
-         oldTicks = processor.getSystemCpuLoadTicks();
-         return String.format("%.2f%%", usage);
-     }
+    public String getPercentUsageCPU()
+    {
+        double usage = processor.getSystemCpuLoadBetweenTicks(oldTicks) * 100d;
+        oldTicks = processor.getSystemCpuLoadTicks();
+        return String.format("%.2f%%", usage);
+    }
     
+    public int getCountLogicalCPU()
+    {
+        return processor.getLogicalProcessorCount();
+    }
 }
