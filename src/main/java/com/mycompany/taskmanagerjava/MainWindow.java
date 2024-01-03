@@ -52,6 +52,9 @@ public class MainWindow extends javax.swing.JFrame {
         lblLoadCPU = new javax.swing.JLabel();
         lblLoadRAM = new javax.swing.JLabel();
         lblLoadDisk = new javax.swing.JLabel();
+        jPanel2 = new javax.swing.JPanel();
+        jScrollPane1 = new javax.swing.JScrollPane();
+        tblProcesses = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -179,6 +182,32 @@ public class MainWindow extends javax.swing.JFrame {
 
         jTabbedPane1.addTab("Information", jPanel1);
 
+        tblProcesses.setAutoCreateRowSorter(true);
+        tblProcesses.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "PID", "Name", "CPU %", "RAM"
+            }
+        ));
+        tblProcesses.setColumnSelectionAllowed(true);
+        jScrollPane1.setViewportView(tblProcesses);
+        tblProcesses.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+        );
+
+        jTabbedPane1.addTab("Processes", jPanel2);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -238,6 +267,8 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel7;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
+    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JLabel lblInfoCPU;
@@ -247,6 +278,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel lblLoadCPU;
     private javax.swing.JLabel lblLoadDisk;
     private javax.swing.JLabel lblLoadRAM;
+    private javax.swing.JTable tblProcesses;
     // End of variables declaration//GEN-END:variables
 
     private void ShowGlobalInformation() {
