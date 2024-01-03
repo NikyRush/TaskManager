@@ -15,6 +15,9 @@ public class MainWindow extends javax.swing.JFrame {
     
     public MainWindow() {
         initComponents();
+        //Установка jframe по центру
+        this.setLocationRelativeTo(null);
+        
         si = new SystemInfo();
         controller = Controller.getInstance(si);
         
@@ -58,6 +61,8 @@ public class MainWindow extends javax.swing.JFrame {
         tblProcesses = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setTitle("Task Manager");
+        setPreferredSize(new java.awt.Dimension(550, 306));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setText("CPU");
@@ -111,7 +116,7 @@ public class MainWindow extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(lblInfoCPU, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE))
+                                .addComponent(lblInfoCPU, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel4, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
@@ -132,15 +137,15 @@ public class MainWindow extends javax.swing.JFrame {
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel6, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(lblLoadCPU, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE))
+                                .addComponent(lblLoadCPU, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel7, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(lblLoadRAM, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE))
+                                .addComponent(lblLoadRAM, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 37, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(18, 18, 18)
-                                .addComponent(lblLoadDisk, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)))
+                                .addComponent(lblLoadDisk, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE)))
                         .addGap(16, 16, 16))))
         );
         jPanel1Layout.setVerticalGroup(
@@ -191,7 +196,15 @@ public class MainWindow extends javax.swing.JFrame {
             new String [] {
                 "PID", "Name", "CPU %", "RAM"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         tblProcesses.setColumnSelectionAllowed(true);
         jScrollPane1.setViewportView(tblProcesses);
         tblProcesses.getColumnModel().getSelectionModel().setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
@@ -200,11 +213,11 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 591, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 600, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 265, Short.MAX_VALUE)
         );
 
         jTabbedPane1.addTab("Processes", jPanel2);
@@ -217,7 +230,9 @@ public class MainWindow extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addGroup(layout.createSequentialGroup()
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 300, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 6, Short.MAX_VALUE))
         );
 
         pack();
