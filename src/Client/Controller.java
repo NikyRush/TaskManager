@@ -1,4 +1,4 @@
-package taskmanager;
+package Client;
 
 import Characteristic.CPU;
 import Characteristic.Disk;

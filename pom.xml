@@ -42,7 +42,7 @@
                     </descriptorRefs>
                     <archive>
                     <manifest>
-                            <mainClass>taskmanager.MainWindow</mainClass>
+                            <mainClass>Client.MainWindow</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
