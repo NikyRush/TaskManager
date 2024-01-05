@@ -1,6 +1,5 @@
 package Client;
 
-import Client.Controller;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import oshi.SystemInfo;
