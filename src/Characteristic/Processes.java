@@ -27,7 +27,7 @@ public class Processes {
         this.cpuLogicalCount = cpuLogicalCount;
     }
     
-    public List<ProcessInfo> getProcesses() {
+    public ArrayList<ProcessInfo> getProcesses() {
         actualProcesses.clear();
         
         int pid;
