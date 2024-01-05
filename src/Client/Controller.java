@@ -5,11 +5,7 @@ import Characteristic.Disk;
 import Characteristic.GPU;
 import Characteristic.Processes;
 import Characteristic.RAM;
-import DataExchange.Function;
-import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
-import javax.management.MBeanServer;
-import javax.management.ObjectName;
 import javax.swing.table.DefaultTableModel;
 import oshi.SystemInfo;
 import oshi.util.FormatUtil;
@@ -78,12 +74,6 @@ public class Controller {
     
     public void startListeningPort() throws Exception
     {
-        MBeanServer server = ManagementFactory.getPlatformMBeanServer();
-        ObjectName name = new ObjectName("DataExchange:type=Function");
-        Function mbean = new Function(instance);
-        server.registerMBean(mbean, name);
-        
-        System.out.println("Waiting forever...");
-        Thread.sleep(Long.MAX_VALUE);
+        new ClientThread("Client", instance).start();
     }
 }

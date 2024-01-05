@@ -1,5 +1,7 @@
 package Client;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
 import oshi.SystemInfo;
@@ -22,7 +24,15 @@ public class MainWindow extends javax.swing.JFrame {
         controller = Controller.getInstance(si);
         
         ShowGlobalInformation();
-                
+        
+        //Запуск прослушки порта(Выступает в роли сервера)
+        try {
+            controller.startListeningPort();
+        } catch (Exception ex) {
+            Logger.getLogger(MainWindow.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        //Запуск таймера локального обновления информации
         Timer timer = new Timer(1000, e -> {
             Update();
         });
