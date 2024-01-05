@@ -1,4 +1,4 @@
-package com.mycompany.taskmanagerjava;
+package taskmanager;
 
 import Characteristic.CPU;
 import Characteristic.Disk;

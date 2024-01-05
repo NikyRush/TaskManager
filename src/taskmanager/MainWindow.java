@@ -1,4 +1,4 @@
-package com.mycompany.taskmanagerjava;
+package taskmanager;
 
 import javax.swing.Timer;
 import javax.swing.table.DefaultTableModel;
@@ -62,7 +62,6 @@ public class MainWindow extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Task Manager");
-        setPreferredSize(new java.awt.Dimension(550, 306));
 
         jLabel1.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel1.setText("CPU");
