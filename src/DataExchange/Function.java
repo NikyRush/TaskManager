@@ -14,8 +14,8 @@ public class Function implements FunctionMBean{
     }
     
     @Override
-    public SystemInfo returnSystemInfo() {
-        return new SystemInfo(
+    public HardwareInfo returnHardwareInfo() {
+        return new HardwareInfo(
         controller.getCPU().getInfo(),
         controller.getDisk().getInfo(),
         controller.getRAM().getInfo(),

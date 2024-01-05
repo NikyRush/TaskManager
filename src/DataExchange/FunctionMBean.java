@@ -5,6 +5,6 @@ package DataExchange;
  * @author Admin
  */
 public interface FunctionMBean {
-    SystemInfo returnSystemInfo();
+    HardwareInfo returnHardwareInfo();
     LoadInfo returnLoadInfo();
 }
