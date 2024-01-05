@@ -1,10 +1,12 @@
 package DataExchange;
 
+import java.io.Serializable;
+
 /**
  *
  * @author Admin
  */
-public class SystemInfo {
+public class SystemInfo implements Serializable{
     String infoCPU, infoDisk, infoRAM, infoGPU;
 
     public SystemInfo(String infoCPU, String infoDisk, String infoRAM, String infoGPU) {

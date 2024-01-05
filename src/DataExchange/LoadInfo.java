@@ -1,13 +1,14 @@
 package DataExchange;
 
 import Characteristic.Processes;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
  *
  * @author Admin
  */
-public class LoadInfo {
+public class LoadInfo implements Serializable{
     String loadCPU, loadRAM, loadDisk;
     ArrayList<Processes.ProcessInfo> processes;
 

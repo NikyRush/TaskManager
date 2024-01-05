@@ -5,6 +5,7 @@ import Characteristic.Disk;
 import Characteristic.GPU;
 import Characteristic.Processes;
 import Characteristic.RAM;
+import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import oshi.SystemInfo;
 import oshi.util.FormatUtil;
@@ -50,7 +51,11 @@ public class Controller {
     public Disk getDisk() { return disk; }
 
     public GPU getGPU() { return gpu; }
-    
+
+    public ArrayList<Processes.ProcessInfo> getProcesses() {
+        return processes.getProcesses();
+    }
+
     public void UpdateTableProcesses(DefaultTableModel model)
     {
         model.setRowCount(0);
@@ -66,4 +71,6 @@ public class Controller {
             model.addRow(data);
         }
     }
+    
+    
 }
