@@ -9,25 +9,25 @@ import java.util.ArrayList;
  * @author Admin
  */
 public class LoadInfo implements Serializable{
-    String loadCPU, loadRAM, loadDisk;
+    double loadCPU, loadRAM, loadDisk;
     ArrayList<Processes.ProcessInfo> processes;
 
-    public LoadInfo(String loadCPU, String loadRAM, String loadDisk, ArrayList<Processes.ProcessInfo> processes) {
+    public LoadInfo(double loadCPU, double loadRAM, double loadDisk, ArrayList<Processes.ProcessInfo> processes) {
         this.loadCPU = loadCPU;
         this.loadRAM = loadRAM;
         this.loadDisk = loadDisk;
         this.processes = processes;
     }
 
-    public String getLoadCPU() {
+    public double getLoadCPU() {
         return loadCPU;
     }
 
-    public String getLoadRAM() {
+    public double getLoadRAM() {
         return loadRAM;
     }
 
-    public String getLoadDisk() {
+    public double getLoadDisk() {
         return loadDisk;
     }
 
