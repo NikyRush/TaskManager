@@ -301,8 +301,8 @@
                       <Table columnCount="4" rowCount="0">
                         <Column editable="true" title="PID" type="java.lang.Integer"/>
                         <Column editable="true" title="Name" type="java.lang.String"/>
-                        <Column editable="true" title="CPU %" type="java.lang.Object"/>
-                        <Column editable="true" title="RAM" type="java.lang.Object"/>
+                        <Column editable="true" title="CPU (%)" type="java.lang.Double"/>
+                        <Column editable="true" title="RAM (Mb)" type="java.lang.Double"/>
                       </Table>
                     </Property>
                     <Property name="columnModel" type="javax.swing.table.TableColumnModel" editor="org.netbeans.modules.form.editors2.TableColumnModelEditor">

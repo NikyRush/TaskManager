@@ -24,12 +24,12 @@ public class Disk {
         return diskStore.getModel();
     }
     
-    public String getTotalSpace()
+    public double getTotalSpace()
     {
-        return FormatUtil.formatBytes(diskStore.getSize());
+        return CONST.BytesToGigabytes(diskStore.getSize());
     }
     
-    public String getUsedSpace()
+    public double getUsedSpace()
     {
         long used = 0;
         try {
@@ -38,6 +38,6 @@ public class Disk {
         } catch (IOException e) {
             used = 0;
         }
-        return FormatUtil.formatBytes(used);
+        return CONST.BytesToGigabytes(used);
     }
 }

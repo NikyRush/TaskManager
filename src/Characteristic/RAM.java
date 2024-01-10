@@ -22,13 +22,13 @@ public class RAM {
         this.memory = si.getHardware().getMemory();
     }
     
-    public String getTotalSpace()
+    public double getTotalSpace()
     {
-        return FormatUtil.formatBytes(memory.getTotal());
+        return CONST.BytesToGigabytes(memory.getTotal());
     }
 
-    public String getUsedSpace() {
-        return FormatUtil.formatBytes(memory.getTotal() - memory.getAvailable());
+    public double getUsedSpace() {
+        return CONST.BytesToGigabytes(memory.getTotal() - memory.getAvailable()); 
     }
     
     /**

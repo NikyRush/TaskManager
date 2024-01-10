@@ -203,11 +203,11 @@ public class MainWindow extends javax.swing.JFrame {
 
             },
             new String [] {
-                "PID", "Name", "CPU %", "RAM"
+                "PID", "Name", "CPU (%)", "RAM (Mb)"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -314,9 +314,9 @@ public class MainWindow extends javax.swing.JFrame {
     }
 
     private void Update() {
-        lblLoadCPU.setText(controller.getCPU().getPercentUsageCPU());
-        lblLoadRAM.setText(controller.getRAM().getUsedSpace() + " / " + controller.getRAM().getTotalSpace());
-        lblLoadDisk.setText(controller.getDisk().getUsedSpace() + " / " + controller.getDisk().getTotalSpace());
+        lblLoadCPU.setText(controller.getCPU().getPercentUsageCPU() + "%");
+        lblLoadRAM.setText(controller.getRAM().getUsedSpace() + " / " + controller.getRAM().getTotalSpace() + " Gb");
+        lblLoadDisk.setText(controller.getDisk().getUsedSpace() + " / " + controller.getDisk().getTotalSpace() + " Gb");
         
         controller.UpdateTableProcesses((DefaultTableModel)tblProcesses.getModel());
     }

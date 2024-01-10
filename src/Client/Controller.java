@@ -1,5 +1,6 @@
 package Client;
 
+import Characteristic.CONST;
 import Characteristic.CPU;
 import Characteristic.Disk;
 import Characteristic.GPU;
@@ -66,8 +67,8 @@ public class Controller {
         {
             data[0] = process.getPID();
             data[1] = process.getName();
-            data[2] = String.format("%.1f%%", process.getCpuLoadPercent());
-            data[3] = FormatUtil.formatBytes(process.getRamUsed());
+            data[2] = CONST.Round(process.getCpuLoadPercent());
+            data[3] = CONST.BytesToMegabytes(process.getRamUsed());
             model.addRow(data);
         }
     }
