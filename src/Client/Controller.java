@@ -1,6 +1,5 @@
 package Client;
 
-import Characteristic.CONST;
 import Characteristic.CPU;
 import Characteristic.Disk;
 import Characteristic.GPU;
@@ -9,7 +8,6 @@ import Characteristic.RAM;
 import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import oshi.SystemInfo;
-import oshi.util.FormatUtil;
 
 /**
  *
@@ -67,8 +65,8 @@ public class Controller {
         {
             data[0] = process.getPID();
             data[1] = process.getName();
-            data[2] = CONST.Round(process.getCpuLoadPercent());
-            data[3] = CONST.BytesToMegabytes(process.getRamUsed());
+            data[2] = process.getCpuLoadPercent();
+            data[3] = process.getRamUsed();
             model.addRow(data);
         }
     }

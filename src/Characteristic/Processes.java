@@ -41,7 +41,7 @@ public class Processes {
                     p.getName(),
                     p.getProcessCpuLoadBetweenTicks(oldProcesses.get(pid)) / cpuLogicalCount * 100d,
                     p.getResidentSetSize());
-                if(processInfo.cpuLoadPercent > 0)
+                if(processInfo.cpuLoadPercent > 0 || processInfo.ramUsed > 15)
                     actualProcesses.add(processInfo);
             }
         }
@@ -58,7 +58,7 @@ public class Processes {
         private final int pid;
         private final String name;
         private final double cpuLoadPercent;
-        private final long ramUsed;
+        private final double ramUsed;
         
         public int getPID() {
             return pid;
@@ -72,15 +72,15 @@ public class Processes {
             return cpuLoadPercent;
         }
 
-        public long getRamUsed() {
+        public double getRamUsed() {
             return ramUsed;
         }
 
         public ProcessInfo(int pid, String name, double cpuLoadPercent, long ramUsed) {
             this.pid = pid;
             this.name = name;
-            this.cpuLoadPercent = cpuLoadPercent;
-            this.ramUsed = ramUsed;
+            this.cpuLoadPercent = CONST.Round(cpuLoadPercent);
+            this.ramUsed = CONST.BytesToMegabytes(ramUsed);
         }
     }
 }

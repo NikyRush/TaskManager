@@ -27,7 +27,7 @@ public class CPU {
     {
         double usage = processor.getSystemCpuLoadBetweenTicks(oldTicks) * 100d;
         oldTicks = processor.getSystemCpuLoadTicks();
-        return Math.round(usage*100.0)/100.0;
+        return CONST.Round(usage);
     }
     
     public int getCountLogicalCPU()
