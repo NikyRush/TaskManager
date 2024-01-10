@@ -58,25 +58,26 @@ public class MainWindow extends javax.swing.JFrame {
         tblProcesses = new javax.swing.JTable();
         jPanel3 = new javax.swing.JPanel();
         jScrollPane2 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
+        tableClients = new javax.swing.JTable();
         jLabel9 = new javax.swing.JLabel();
         jLabel10 = new javax.swing.JLabel();
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        btnAddClient = new javax.swing.JButton();
+        btnSaveChangeClient = new javax.swing.JButton();
+        btnDeleteClient = new javax.swing.JButton();
         jLabel11 = new javax.swing.JLabel();
         txtPort = new javax.swing.JTextField();
         txtName = new javax.swing.JTextField();
         txtIPAddress = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
         lblStatus = new javax.swing.JLabel();
-        jButton4 = new javax.swing.JButton();
-        jButton5 = new javax.swing.JButton();
+        btnStartServer = new javax.swing.JButton();
+        btnStopServer = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
         areaMessage = new javax.swing.JTextArea();
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         txtTimeUpdate = new javax.swing.JTextField();
+        btnSaveServerSettings = new javax.swing.JButton();
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -242,7 +243,7 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(cbClientIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14)
                     .addComponent(cbTimeQuery, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(67, Short.MAX_VALUE))
+                .addContainerGap(68, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("Information", jPanel1);
@@ -275,13 +276,13 @@ public class MainWindow extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 362, Short.MAX_VALUE)
         );
 
         jTabbedPane2.addTab("Processes", jPanel2);
 
-        jTable1.setAutoCreateRowSorter(true);
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
+        tableClients.setAutoCreateRowSorter(true);
+        tableClients.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
                 {null, null, null, null},
                 {null, null, null, null},
@@ -307,8 +308,8 @@ public class MainWindow extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        jTable1.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
-        jScrollPane2.setViewportView(jTable1);
+        tableClients.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        jScrollPane2.setViewportView(tableClients);
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel9.setText("IpAddress");
@@ -316,11 +317,11 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel10.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel10.setText("Port");
 
-        jButton1.setText("Add");
+        btnAddClient.setText("Add");
 
-        jButton2.setText("Save");
+        btnSaveChangeClient.setText("Save");
 
-        jButton3.setText("Delete");
+        btnDeleteClient.setText("Delete");
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel11.setText("Name");
@@ -355,11 +356,11 @@ public class MainWindow extends javax.swing.JFrame {
                                 .addComponent(txtName, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE))))
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(89, 89, 89)
-                        .addComponent(jButton1)
+                        .addComponent(btnAddClient)
                         .addGap(75, 75, 75)
-                        .addComponent(jButton2)
+                        .addComponent(btnSaveChangeClient)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jButton3)
+                        .addComponent(btnDeleteClient)
                         .addGap(84, 84, 84)))
                 .addContainerGap())
         );
@@ -378,10 +379,10 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(txtIPAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jButton2)
-                    .addComponent(jButton1)
-                    .addComponent(jButton3))
-                .addContainerGap(29, Short.MAX_VALUE))
+                    .addComponent(btnSaveChangeClient)
+                    .addComponent(btnAddClient)
+                    .addComponent(btnDeleteClient))
+                .addContainerGap(30, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("Clients Settings", jPanel3);
@@ -389,9 +390,9 @@ public class MainWindow extends javax.swing.JFrame {
         lblStatus.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
         lblStatus.setText("Status");
 
-        jButton4.setText("Start");
+        btnStartServer.setText("Start");
 
-        jButton5.setText("Stop");
+        btnStopServer.setText("Stop");
 
         areaMessage.setColumns(20);
         areaMessage.setRows(5);
@@ -405,6 +406,8 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel16.setText("Data update time(minutes)");
 
+        btnSaveServerSettings.setText("Save Server Settings");
+
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
         jPanel5Layout.setHorizontalGroup(
@@ -415,14 +418,14 @@ public class MainWindow extends javax.swing.JFrame {
                         .addGap(22, 22, 22)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel5Layout.createSequentialGroup()
-                                .addComponent(jButton4)
+                                .addComponent(btnStartServer)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(jButton5))
+                                .addComponent(btnStopServer))
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addGap(52, 52, 52)
                                 .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 372, Short.MAX_VALUE))
+                        .addComponent(jScrollPane3))
                     .addGroup(jPanel5Layout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(jLabel15, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
@@ -432,7 +435,9 @@ public class MainWindow extends javax.swing.JFrame {
                 .addComponent(jLabel16)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(txtTimeUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addGap(44, 44, 44)
+                .addComponent(btnSaveServerSettings, javax.swing.GroupLayout.PREFERRED_SIZE, 157, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(80, Short.MAX_VALUE))
         );
         jPanel5Layout.setVerticalGroup(
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -443,15 +448,16 @@ public class MainWindow extends javax.swing.JFrame {
                         .addComponent(lblStatus)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jButton4)
-                            .addComponent(jButton5)))
+                            .addComponent(btnStartServer)
+                            .addComponent(btnStopServer)))
                     .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(18, 18, 18)
                 .addComponent(jLabel15)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
-                    .addComponent(txtTimeUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTimeUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(btnSaveServerSettings))
                 .addContainerGap(207, Short.MAX_VALUE))
         );
 
@@ -514,13 +520,14 @@ public class MainWindow extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JTextArea areaMessage;
+    private javax.swing.JButton btnAddClient;
+    private javax.swing.JButton btnDeleteClient;
+    private javax.swing.JButton btnSaveChangeClient;
+    private javax.swing.JButton btnSaveServerSettings;
+    private javax.swing.JButton btnStartServer;
+    private javax.swing.JButton btnStopServer;
     private javax.swing.JComboBox<String> cbClientIP;
     private javax.swing.JComboBox<String> cbTimeQuery;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    private javax.swing.JButton jButton4;
-    private javax.swing.JButton jButton5;
     private javax.swing.JFormattedTextField jFormattedTextField1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
@@ -551,7 +558,6 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTabbedPane jTabbedPane2;
-    private javax.swing.JTable jTable1;
     private javax.swing.JLabel lblInfoCPU;
     private javax.swing.JLabel lblInfoDisk;
     private javax.swing.JLabel lblInfoGPU;
@@ -560,6 +566,7 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel lblLoadDisk;
     private javax.swing.JLabel lblLoadRAM;
     private javax.swing.JLabel lblStatus;
+    private javax.swing.JTable tableClients;
     private javax.swing.JTable tblProcesses;
     private javax.swing.JTextField txtIPAddress;
     private javax.swing.JTextField txtName;
