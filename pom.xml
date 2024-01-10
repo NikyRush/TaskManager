@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <exec.mainClass>taskmanager.TaskManagerJava</exec.mainClass>
+        <exec.mainClass>Client.MainWindow</exec.mainClass>
     </properties>
     
     <dependencies>
@@ -22,11 +22,6 @@
             <groupId>cn.hutool</groupId>
             <artifactId>hutool-all</artifactId>
             <version>5.5.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jfree</groupId>
-            <artifactId>jfreechart</artifactId>
-            <version>1.5.4</version>
         </dependency>
     </dependencies>
     <build>
