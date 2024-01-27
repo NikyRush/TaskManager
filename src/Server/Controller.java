@@ -50,9 +50,9 @@ public class Controller {
         return instance;
     }
     
-    public void getConnectionDB(String user, String password) throws SQLException
+    public void getConnectionDB(String user, String password, String DBname) throws SQLException
     {
-        managerDB.getConnection(user, password);
+        managerDB.getConnection(user, password, DBname);
     }
     
     public void ServerStart(int minutes)

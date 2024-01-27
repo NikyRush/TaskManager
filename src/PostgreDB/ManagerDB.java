@@ -5,15 +5,12 @@ import Characteristic.CONST;
 import Characteristic.ProcessInfo;
 import DataExchange.HardwareInfo;
 import DataExchange.LoadInfo;
+import static PostgreDB.StructureDB.*;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import PostgreDB.StructureDB.TableClient;
-import PostgreDB.StructureDB.TableError;
-import PostgreDB.StructureDB.TableProcess;
-import PostgreDB.StructureDB.TableQuery;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
@@ -26,15 +23,33 @@ public class ManagerDB {
     Connection con;
     Statement statement;
     
-    public void getConnection(String user, String password) throws SQLException
+    public void getConnection(String user, String password, String DBName) throws SQLException
     {
         if(con == null)
-            con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/TaskManager", user, password);
+        {
+            con = DriverManager.getConnection("jdbc:postgresql://localhost:5432/" + DBName, user, password);
+            CreateTables();
+        }
     }
     
     public boolean isConnected()
     {
         return (con != null);
+    }
+    
+ 
+    private void CreateTables() throws SQLException
+    {
+        CreateTable(SQL_CREATE_CLIENT);
+        CreateTable(SQL_CREATE_QUERY);
+        CreateTable(SQL_CREATE_PROCESS);
+        CreateTable(SQL_CREATE_ERROR);
+    }
+    
+    private void CreateTable(String SQL_CREATE_TABLE) throws SQLException {
+        statement = con.createStatement();
+        statement.executeUpdate(SQL_CREATE_TABLE);
+        statement.close();
     }
     
     public void getListClient(DefaultTableModel model, DefaultComboBoxModel cb) throws SQLException
@@ -339,5 +354,7 @@ public class ManagerDB {
             statement.close();
         }
     }
+
+
 
 }
