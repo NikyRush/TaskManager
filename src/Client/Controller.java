@@ -3,6 +3,7 @@ package Client;
 import Characteristic.CPU;
 import Characteristic.Disk;
 import Characteristic.GPU;
+import Characteristic.ProcessInfo;
 import Characteristic.Processes;
 import Characteristic.RAM;
 import java.util.ArrayList;
@@ -51,7 +52,7 @@ public class Controller {
 
     public GPU getGPU() { return gpu; }
 
-    public ArrayList<Processes.ProcessInfo> getProcesses() {
+    public ArrayList<ProcessInfo> getProcesses() {
         return processes.getProcesses();
     }
 
