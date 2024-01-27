@@ -13,7 +13,7 @@ import oshi.software.os.OperatingSystem;
  *
  * @author Admin
  */
-public class Processes {
+public class Processes{
     private final ArrayList<ProcessInfo> actualProcesses;
     private final Map<Integer, OSProcess> oldProcesses;
     private final int cpuLogicalCount;
@@ -41,7 +41,7 @@ public class Processes {
                     p.getName(),
                     p.getProcessCpuLoadBetweenTicks(oldProcesses.get(pid)) / cpuLogicalCount * 100d,
                     p.getResidentSetSize());
-                if(processInfo.cpuLoadPercent > 0 || processInfo.ramUsed > 15)
+                if(processInfo.getCpuLoadPercent() > 0 || processInfo.getRamUsed() > 100)
                     actualProcesses.add(processInfo);
             }
         }
@@ -52,35 +52,5 @@ public class Processes {
         }
         
         return actualProcesses;
-    }
-    
-    public class ProcessInfo {
-        private final int pid;
-        private final String name;
-        private final double cpuLoadPercent;
-        private final double ramUsed;
-        
-        public int getPID() {
-            return pid;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public double getCpuLoadPercent() {
-            return cpuLoadPercent;
-        }
-
-        public double getRamUsed() {
-            return ramUsed;
-        }
-
-        public ProcessInfo(int pid, String name, double cpuLoadPercent, long ramUsed) {
-            this.pid = pid;
-            this.name = name;
-            this.cpuLoadPercent = CONST.Round(cpuLoadPercent);
-            this.ramUsed = CONST.BytesToMegabytes(ramUsed);
-        }
     }
 }
