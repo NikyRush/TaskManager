@@ -766,7 +766,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_btnStopServerActionPerformed
 
     private void btnDeleteClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteClientActionPerformed
-        if(tableClients.getSelectedRowCount() != 1)
+        if(!managerDB.isConnected() || tableClients.getSelectedRowCount() != 1)
             return;
 
         try{
@@ -789,7 +789,7 @@ public class MainWindow extends javax.swing.JFrame {
         port = txtPort.getText();
         name = txtName.getText();
 
-        if(ipAddress.isEmpty() || port.isEmpty() || name.isEmpty() || tableClients.getSelectedRowCount() != 1)
+        if(!managerDB.isConnected() || ipAddress.isEmpty() || port.isEmpty() || name.isEmpty() || tableClients.getSelectedRowCount() != 1)
             return;
 
         try{
@@ -813,7 +813,7 @@ public class MainWindow extends javax.swing.JFrame {
         port = txtPort.getText();
         name = txtName.getText();
 
-        if(ipAddress.isEmpty() || port.isEmpty() || name.isEmpty())
+        if(!managerDB.isConnected() || ipAddress.isEmpty() || port.isEmpty() || name.isEmpty())
             return;
         try{
             managerDB.insertClient(ipAddress, port, name);
