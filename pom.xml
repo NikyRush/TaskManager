@@ -9,7 +9,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
-        <exec.mainClass>Client.MainWindow</exec.mainClass>
+        <exec.mainClass>Server.MainWindow</exec.mainClass>
     </properties>
     
     <dependencies>
@@ -44,7 +44,7 @@
                     </descriptorRefs>
                     <archive>
                     <manifest>
-                            <mainClass>Client.MainWindow</mainClass>
+                            <mainClass>Server.MainWindow</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
