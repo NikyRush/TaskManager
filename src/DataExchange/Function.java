@@ -26,7 +26,6 @@ public class Function implements FunctionMBean{
     @Override
     public LoadInfo returnLoadInfo() {
         return new LoadInfo(
-            controller.getCPU().getPercentUsageCPU(),
             controller.getRAM().getUsedSpace(),
             controller.getDisk().getUsedSpace(),
             controller.getProcesses()
