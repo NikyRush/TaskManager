@@ -1,19 +1,38 @@
 package Server;
 
+import PostgreDB.ManagerDB;
+import java.awt.Color;
+import java.sql.SQLException;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
+import javax.swing.table.DefaultTableModel;
+
 
 /**
  *
  * @author Admin
  */
 public class MainWindow extends javax.swing.JFrame {
-    //private final Controller controller;
+    private final Controller controller;
+    private final ManagerDB managerDB;
+    DefaultTableModel clientsTableModel, processesTableModel, errorsTableModel;
+    DefaultComboBoxModel clientsComboModel, queryComboModel;
     
     /**
      * Creates new form MainWindow
      */
     public MainWindow() {
         initComponents();
-
+        
+        clientsTableModel = (DefaultTableModel)tableClients.getModel();
+        processesTableModel = (DefaultTableModel)tblProcesses.getModel();
+        errorsTableModel = (DefaultTableModel)tableErrors.getModel();
+        
+        clientsComboModel = (DefaultComboBoxModel)cbClientIP.getModel();
+        queryComboModel = (DefaultComboBoxModel)cbTimeQuery.getModel();
+        
+        controller = Controller.getInstance(clientsTableModel, errorsTableModel);
+        managerDB = new ManagerDB();
     }
 
     /**
@@ -30,7 +49,7 @@ public class MainWindow extends javax.swing.JFrame {
         jMenu2 = new javax.swing.JMenu();
         jTabbedPane1 = new javax.swing.JTabbedPane();
         jFormattedTextField1 = new javax.swing.JFormattedTextField();
-        jTabbedPane2 = new javax.swing.JTabbedPane();
+        jTabbedPane4 = new javax.swing.JTabbedPane();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -69,7 +88,7 @@ public class MainWindow extends javax.swing.JFrame {
         txtName = new javax.swing.JTextField();
         txtIPAddress = new javax.swing.JTextField();
         jPanel5 = new javax.swing.JPanel();
-        lblStatus = new javax.swing.JLabel();
+        lblStatusServer = new javax.swing.JLabel();
         btnStartServer = new javax.swing.JButton();
         btnStopServer = new javax.swing.JButton();
         jScrollPane3 = new javax.swing.JScrollPane();
@@ -77,15 +96,19 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel15 = new javax.swing.JLabel();
         jLabel16 = new javax.swing.JLabel();
         txtUserName = new javax.swing.JTextField();
-        btnSaveServerSettings = new javax.swing.JButton();
         jLabel17 = new javax.swing.JLabel();
         jScrollPane4 = new javax.swing.JScrollPane();
         areaServerMessage = new javax.swing.JTextArea();
         jLabel18 = new javax.swing.JLabel();
-        txtTimeUpdate1 = new javax.swing.JTextField();
+        txtTimeUpdate = new javax.swing.JTextField();
         jLabel19 = new javax.swing.JLabel();
         txtPassword = new javax.swing.JPasswordField();
-        btnTryConnection = new javax.swing.JButton();
+        btnSetConnection = new javax.swing.JButton();
+        lblStatusDBConnection = new javax.swing.JLabel();
+        jPanel4 = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        tableErrors = new javax.swing.JTable();
+        btnClearAllErrors = new javax.swing.JButton();
 
         jMenu1.setText("File");
         jMenuBar1.add(jMenu1);
@@ -145,12 +168,22 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel13.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel13.setText("Client IP");
 
-        cbClientIP.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbClientIP.setMaximumRowCount(30);
+        cbClientIP.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbClientIPItemStateChanged(evt);
+            }
+        });
 
         jLabel14.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel14.setText("Time query");
 
-        cbTimeQuery.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        cbTimeQuery.setMaximumRowCount(30);
+        cbTimeQuery.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                cbTimeQueryItemStateChanged(evt);
+            }
+        });
 
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
@@ -251,10 +284,10 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(cbClientIP, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel14)
                     .addComponent(cbTimeQuery, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(76, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
-        jTabbedPane2.addTab("Information", jPanel1);
+        jTabbedPane4.addTab("Information", jPanel1);
 
         tblProcesses.setAutoCreateRowSorter(true);
         tblProcesses.setModel(new javax.swing.table.DefaultTableModel(
@@ -262,18 +295,18 @@ public class MainWindow extends javax.swing.JFrame {
 
             },
             new String [] {
-                "PID", "Name", "CPU %", "RAM"
+                "PID", "Name", "CPU %", "RAM (Mb)"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Object.class, java.lang.Object.class
+                java.lang.Integer.class, java.lang.String.class, java.lang.Double.class, java.lang.Double.class
             };
 
             public Class getColumnClass(int columnIndex) {
                 return types [columnIndex];
             }
         });
-        tblProcesses.setColumnSelectionAllowed(true);
+        tblProcesses.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         jScrollPane1.setViewportView(tblProcesses);
 
         javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
@@ -284,28 +317,25 @@ public class MainWindow extends javax.swing.JFrame {
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 370, Short.MAX_VALUE)
+            .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 320, Short.MAX_VALUE)
         );
 
-        jTabbedPane2.addTab("Processes", jPanel2);
+        jTabbedPane4.addTab("Processes", jPanel2);
 
         tableClients.setAutoCreateRowSorter(true);
         tableClients.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+
             },
             new String [] {
-                "#", "Name", "IpAddress", "Port"
+                "Name", "IpAddress", "Port"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.String.class, java.lang.Integer.class
+                java.lang.String.class, java.lang.String.class, java.lang.Integer.class
             };
             boolean[] canEdit = new boolean [] {
-                false, false, false, false
+                false, false, false
             };
 
             public Class getColumnClass(int columnIndex) {
@@ -316,7 +346,12 @@ public class MainWindow extends javax.swing.JFrame {
                 return canEdit [columnIndex];
             }
         });
-        tableClients.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_INTERVAL_SELECTION);
+        tableClients.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        tableClients.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableClientsMouseClicked(evt);
+            }
+        });
         jScrollPane2.setViewportView(tableClients);
 
         jLabel9.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
@@ -326,10 +361,25 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel10.setText("Port");
 
         btnAddClient.setText("Add");
+        btnAddClient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnAddClientActionPerformed(evt);
+            }
+        });
 
         btnSaveChangeClient.setText("Save");
+        btnSaveChangeClient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSaveChangeClientActionPerformed(evt);
+            }
+        });
 
         btnDeleteClient.setText("Delete");
+        btnDeleteClient.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnDeleteClientActionPerformed(evt);
+            }
+        });
 
         jLabel11.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel11.setText("Name");
@@ -339,64 +389,73 @@ public class MainWindow extends javax.swing.JFrame {
         jPanel3Layout.setHorizontalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
+                .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addContainerGap()
-                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane2)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel3Layout.createSequentialGroup()
+                        .addComponent(jLabel9)
+                        .addGap(15, 15, 15)
+                        .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(jPanel3Layout.createSequentialGroup()
-                                .addComponent(jLabel9)
-                                .addGap(4, 4, 4)
                                 .addComponent(txtIPAddress, javax.swing.GroupLayout.PREFERRED_SIZE, 140, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(18, 18, 18)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(jLabel10, javax.swing.GroupLayout.PREFERRED_SIZE, 39, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(24, 24, 24)
-                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(txtName, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE))))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addGap(89, 89, 89)
-                        .addComponent(btnAddClient)
-                        .addGap(75, 75, 75)
-                        .addComponent(btnSaveChangeClient)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(btnDeleteClient)
-                        .addGap(84, 84, 84)))
+                                .addGap(18, 18, 18)
+                                .addComponent(jLabel11, javax.swing.GroupLayout.PREFERRED_SIZE, 50, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(jPanel3Layout.createSequentialGroup()
+                                .addComponent(btnAddClient)
+                                .addGap(64, 64, 64)
+                                .addComponent(btnSaveChangeClient)
+                                .addGap(50, 50, 50)
+                                .addComponent(btnDeleteClient)))
+                        .addGap(13, 13, 13)
+                        .addComponent(txtName, javax.swing.GroupLayout.DEFAULT_SIZE, 137, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 263, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel9)
-                    .addComponent(jLabel10)
-                    .addComponent(jLabel11)
-                    .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(txtIPAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 235, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnSaveChangeClient)
+                    .addComponent(txtIPAddress, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel9)
+                    .addComponent(jLabel10)
+                    .addComponent(txtPort, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel11)
+                    .addComponent(txtName, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(11, 11, 11)
+                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnAddClient)
+                    .addComponent(btnSaveChangeClient)
                     .addComponent(btnDeleteClient))
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addGap(15, 15, 15))
         );
 
-        jTabbedPane2.addTab("Clients Settings", jPanel3);
+        jTabbedPane4.addTab("Clients Settings", jPanel3);
 
-        lblStatus.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
-        lblStatus.setText("Status");
+        lblStatusServer.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblStatusServer.setForeground(new java.awt.Color(255, 51, 0));
+        lblStatusServer.setText("Not started");
 
         btnStartServer.setBackground(new java.awt.Color(204, 255, 153));
         btnStartServer.setText("Start");
+        btnStartServer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStartServerActionPerformed(evt);
+            }
+        });
 
         btnStopServer.setBackground(new java.awt.Color(255, 204, 102));
         btnStopServer.setText("Stop");
+        btnStopServer.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnStopServerActionPerformed(evt);
+            }
+        });
 
         areaDBMassage.setColumns(20);
         areaDBMassage.setRows(5);
@@ -410,9 +469,6 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel16.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel16.setText("Data update time(minutes)");
 
-        btnSaveServerSettings.setBackground(new java.awt.Color(204, 255, 153));
-        btnSaveServerSettings.setText("Save Server Settings");
-
         jLabel17.setFont(new java.awt.Font("Segoe UI", 3, 12)); // NOI18N
         jLabel17.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel17.setText("DataBase (SQL) Settings");
@@ -425,13 +481,22 @@ public class MainWindow extends javax.swing.JFrame {
         jLabel18.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel18.setText("UserName");
 
+        txtTimeUpdate.setText("60");
+
         jLabel19.setFont(new java.awt.Font("Segoe UI", 1, 14)); // NOI18N
         jLabel19.setText("Password");
 
-        txtPassword.setText("jPasswordField1");
+        btnSetConnection.setBackground(new java.awt.Color(204, 255, 153));
+        btnSetConnection.setText("Set Connection");
+        btnSetConnection.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnSetConnectionActionPerformed(evt);
+            }
+        });
 
-        btnTryConnection.setBackground(new java.awt.Color(204, 255, 153));
-        btnTryConnection.setText("Try Connection");
+        lblStatusDBConnection.setFont(new java.awt.Font("Segoe UI", 1, 18)); // NOI18N
+        lblStatusDBConnection.setForeground(new java.awt.Color(255, 51, 51));
+        lblStatusDBConnection.setText("Not connected");
 
         javax.swing.GroupLayout jPanel5Layout = new javax.swing.GroupLayout(jPanel5);
         jPanel5.setLayout(jPanel5Layout);
@@ -452,33 +517,37 @@ public class MainWindow extends javax.swing.JFrame {
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                                         .addComponent(btnStopServer))
                                     .addGroup(jPanel5Layout.createSequentialGroup()
-                                        .addComponent(jLabel16)
-                                        .addGap(18, 18, 18)
-                                        .addComponent(txtTimeUpdate1, javax.swing.GroupLayout.PREFERRED_SIZE, 91, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                        .addGap(38, 38, 38)
-                                        .addComponent(btnSaveServerSettings))
-                                    .addGroup(jPanel5Layout.createSequentialGroup()
-                                        .addGap(60, 60, 60)
-                                        .addComponent(lblStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 62, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                    .addGroup(jPanel5Layout.createSequentialGroup()
                                         .addComponent(jLabel18)
                                         .addGap(18, 18, 18)
                                         .addComponent(txtUserName, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE)
                                         .addGap(18, 18, 18)
-                                        .addComponent(jLabel19)))
+                                        .addComponent(jLabel19))
+                                    .addGroup(jPanel5Layout.createSequentialGroup()
+                                        .addGap(103, 103, 103)
+                                        .addComponent(jLabel16)
+                                        .addGap(18, 18, 18)
+                                        .addComponent(txtTimeUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, 46, javax.swing.GroupLayout.PREFERRED_SIZE)))
                                 .addGap(0, 0, Short.MAX_VALUE)))
                         .addContainerGap())
                     .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(16, 16, 16)
+                        .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(lblStatusDBConnection)
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addGap(8, 8, 8)
+                                .addComponent(btnSetConnection, javax.swing.GroupLayout.PREFERRED_SIZE, 110, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel5Layout.createSequentialGroup()
                                 .addGap(0, 0, Short.MAX_VALUE)
                                 .addComponent(txtPassword, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel5Layout.createSequentialGroup()
-                                .addGap(6, 6, 6)
-                                .addComponent(btnTryConnection)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 28, Short.MAX_VALUE)
-                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 407, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                            .addGroup(jPanel5Layout.createSequentialGroup()
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 379, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(18, 18, 18))))
+            .addGroup(jPanel5Layout.createSequentialGroup()
+                .addGap(53, 53, 53)
+                .addComponent(lblStatusServer)
+                .addGap(0, 0, Short.MAX_VALUE))
             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel5Layout.createSequentialGroup()
                     .addGap(186, 186, 186)
@@ -489,7 +558,7 @@ public class MainWindow extends javax.swing.JFrame {
             jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel5Layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lblStatus)
+                .addComponent(lblStatusServer)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(btnStartServer)
@@ -499,8 +568,7 @@ public class MainWindow extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel16)
-                    .addComponent(btnSaveServerSettings)
-                    .addComponent(txtTimeUpdate1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(txtTimeUpdate, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jLabel17)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
@@ -512,34 +580,269 @@ public class MainWindow extends javax.swing.JFrame {
                     .addComponent(jLabel18, javax.swing.GroupLayout.Alignment.TRAILING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btnTryConnection)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(61, Short.MAX_VALUE))
+                    .addGroup(jPanel5Layout.createSequentialGroup()
+                        .addGap(0, 0, Short.MAX_VALUE)
+                        .addComponent(lblStatusDBConnection)
+                        .addGap(18, 18, 18)
+                        .addComponent(btnSetConnection)
+                        .addGap(9, 9, 9))
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
+                .addGap(70, 70, 70))
             .addGroup(jPanel5Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(jPanel5Layout.createSequentialGroup()
                     .addGap(16, 16, 16)
                     .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 78, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(276, Short.MAX_VALUE)))
+                    .addContainerGap(281, Short.MAX_VALUE)))
         );
 
-        jTabbedPane2.addTab("Server Manager", jPanel5);
+        jTabbedPane4.addTab("Server Manager", jPanel5);
+
+        tableErrors.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+                "ipAddress", "ErrorMessage"
+            }
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
+        jScrollPane5.setViewportView(tableErrors);
+
+        btnClearAllErrors.setText("Clear All");
+        btnClearAllErrors.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                btnClearAllErrorsActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
+        jPanel4.setLayout(jPanel4Layout);
+        jPanel4Layout.setHorizontalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 574, Short.MAX_VALUE)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addGap(229, 229, 229)
+                .addComponent(btnClearAllErrors)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        jPanel4Layout.setVerticalGroup(
+            jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel4Layout.createSequentialGroup()
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 275, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(btnClearAllErrors)
+                .addGap(0, 10, Short.MAX_VALUE))
+        );
+
+        jTabbedPane4.addTab("Error", jPanel4);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane2, javax.swing.GroupLayout.Alignment.TRAILING)
+            .addComponent(jTabbedPane4, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addComponent(jTabbedPane2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, Short.MAX_VALUE))
+            .addComponent(jTabbedPane4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 355, javax.swing.GroupLayout.PREFERRED_SIZE)
         );
 
         pack();
+        setLocationRelativeTo(null);
     }// </editor-fold>//GEN-END:initComponents
 
+    private void btnSetConnectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetConnectionActionPerformed
+        try {
+            managerDB.getConnection(txtUserName.getText(), txtPassword.getText());
+            controller.getConnectionDB(txtUserName.getText(), txtPassword.getText());
+            DBMessage("Successful connection", "Connected", Color.MAGENTA);
+
+            managerDB.getListClient(clientsTableModel, clientsComboModel);
+
+        } catch (SQLException ex) {
+            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
+        }
+    }//GEN-LAST:event_btnSetConnectionActionPerformed
+
+    private void cbTimeQueryItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbTimeQueryItemStateChanged
+        if(cbClientIP.getSelectedItem() == null || cbTimeQuery.getSelectedItem() == null)
+        {
+            processesTableModel.setRowCount(0);
+            return;
+        }
+        
+        try {
+            managerDB.getClientWorkLoad(cbClientIP.getSelectedItem().toString(),
+                cbTimeQuery.getSelectedItem().toString(),
+                lblLoadCPU, lblLoadRAM, lblLoadDisk);
+            
+            managerDB.getClientListProcess(processesTableModel,
+                cbClientIP.getSelectedItem().toString(),
+                cbTimeQuery.getSelectedItem().toString());
+            
+            DBMessage("", "Connected", Color.MAGENTA);
+
+        } catch (SQLException ex) {
+            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
+        }
+    }//GEN-LAST:event_cbTimeQueryItemStateChanged
+
+    private void cbClientIPItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbClientIPItemStateChanged
+        if(cbClientIP.getSelectedItem() == null)
+        {
+            queryComboModel.removeAllElements();
+            lblInfoCPU.setText("");
+            lblInfoRAM.setText("");
+            lblInfoDisk.setText("");
+            lblInfoGPU.setText("");
+            
+            lblLoadCPU.setText("");
+            lblLoadRAM.setText("");
+            lblLoadDisk.setText("");
+
+            processesTableModel.setRowCount(0);
+            
+            return;
+
+        }
+        
+        try {
+            managerDB.getListQuery(queryComboModel, cbClientIP.getSelectedItem().toString());
+            managerDB.getClientHardWareInfo(cbClientIP.getSelectedItem().toString(),
+                lblInfoCPU, lblInfoRAM, lblInfoGPU, lblInfoDisk);
+            
+            DBMessage("", "Connected", Color.MAGENTA);
+
+        } catch (SQLException ex) {
+            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
+        }
+    }//GEN-LAST:event_cbClientIPItemStateChanged
+
+    private void btnStartServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartServerActionPerformed
+        if(managerDB.isConnected())
+        {
+            if(clientsTableModel.getRowCount() == 0)
+            {
+                areaServerMessage.setText("Список клиентов пуст. Добавьте клиентов.");
+                return;
+            }
+            try
+            {
+                int minutes = Integer.parseInt(txtTimeUpdate.getText());
+                if(minutes > 0 && minutes < 999)
+                {
+                    controller.ServerStart(minutes);
+                    txtTimeUpdate.setEditable(false);
+                    lblStatusServer.setText("Started");
+                    lblStatusDBConnection.setForeground(Color.MAGENTA);
+                    
+                    areaServerMessage.setText("Сервер успешно запущен!");
+
+                }
+                else
+                    areaServerMessage.setText("Неверный формат времени: (0;999)");
+
+            }catch(Exception ex)
+            {
+                areaServerMessage.setText("Неверный формат времени: (0;999)");
+            }
+        }
+        else
+            JOptionPane.showMessageDialog(null, "Set connection to DB!", "Failed start Server", JOptionPane.ERROR_MESSAGE);
+    }//GEN-LAST:event_btnStartServerActionPerformed
+
+    private void btnStopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopServerActionPerformed
+        controller.ServerStop();
+        txtTimeUpdate.setEditable(true);
+        lblStatusServer.setText("Stoped");
+        areaServerMessage.setText("Сервер остановлен!");
+    }//GEN-LAST:event_btnStopServerActionPerformed
+
+    private void btnDeleteClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteClientActionPerformed
+        if(tableClients.getSelectedRowCount() != 1)
+            return;
+
+        try{
+            String oldIpAddress = clientsTableModel.getValueAt(tableClients.getSelectedRow(), 1).toString();
+            managerDB.deleteClient(oldIpAddress);
+            managerDB.getListClient(clientsTableModel, clientsComboModel);
+            DBMessage("", "Connected", Color.MAGENTA);
+            
+            
+            btnStopServerActionPerformed(null);
+
+        }catch(SQLException ex){
+            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
+        }
+    }//GEN-LAST:event_btnDeleteClientActionPerformed
+
+    private void btnSaveChangeClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveChangeClientActionPerformed
+        String ipAddress, port, name;
+        ipAddress = txtIPAddress.getText();
+        port = txtPort.getText();
+        name = txtName.getText();
+
+        if(ipAddress.isEmpty() || port.isEmpty() || name.isEmpty() || tableClients.getSelectedRowCount() != 1)
+            return;
+
+        try{
+            String oldIpAddress = clientsTableModel.getValueAt(tableClients.getSelectedRow(), 1).toString();
+            managerDB.updateClient(oldIpAddress, ipAddress, port, name);
+            managerDB.getListClient(clientsTableModel, clientsComboModel);
+            
+            DBMessage("", "Connected", Color.MAGENTA);
+            
+            
+            btnStopServerActionPerformed(null);
+                    
+        }catch(SQLException ex){
+            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
+        }
+    }//GEN-LAST:event_btnSaveChangeClientActionPerformed
+
+    private void btnAddClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddClientActionPerformed
+        String ipAddress, port, name;
+        ipAddress = txtIPAddress.getText();
+        port = txtPort.getText();
+        name = txtName.getText();
+
+        if(ipAddress.isEmpty() || port.isEmpty() || name.isEmpty())
+            return;
+        try{
+            managerDB.insertClient(ipAddress, port, name);
+            managerDB.getListClient(clientsTableModel, clientsComboModel);
+            DBMessage("", "Connected", Color.MAGENTA);
+            
+            btnStopServerActionPerformed(null);
+        }catch(SQLException ex){
+            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
+        }
+    }//GEN-LAST:event_btnAddClientActionPerformed
+
+    private void tableClientsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableClientsMouseClicked
+        txtName.setText(clientsTableModel.getValueAt(tableClients.getSelectedRow(), 0).toString());
+        txtIPAddress.setText(clientsTableModel.getValueAt(tableClients.getSelectedRow(), 1).toString());
+        txtPort.setText(clientsTableModel.getValueAt(tableClients.getSelectedRow(), 2).toString());
+    }//GEN-LAST:event_tableClientsMouseClicked
+
+    private void btnClearAllErrorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearAllErrorsActionPerformed
+        errorsTableModel.setRowCount(0);
+    }//GEN-LAST:event_btnClearAllErrorsActionPerformed
+    
+    private void DBMessage(String message, String status, Color color)
+    {
+        areaDBMassage.setText(message);
+        lblStatusDBConnection.setText(status);
+        lblStatusDBConnection.setForeground(color);
+    }
+    
     /**
      * @param args the command line arguments
      */
@@ -579,12 +882,12 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextArea areaDBMassage;
     private javax.swing.JTextArea areaServerMessage;
     private javax.swing.JButton btnAddClient;
+    private javax.swing.JButton btnClearAllErrors;
     private javax.swing.JButton btnDeleteClient;
     private javax.swing.JButton btnSaveChangeClient;
-    private javax.swing.JButton btnSaveServerSettings;
+    private javax.swing.JButton btnSetConnection;
     private javax.swing.JButton btnStartServer;
     private javax.swing.JButton btnStopServer;
-    private javax.swing.JButton btnTryConnection;
     private javax.swing.JComboBox<String> cbClientIP;
     private javax.swing.JComboBox<String> cbTimeQuery;
     private javax.swing.JFormattedTextField jFormattedTextField1;
@@ -613,14 +916,16 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
+    private javax.swing.JPanel jPanel4;
     private javax.swing.JPanel jPanel5;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTabbedPane jTabbedPane2;
+    private javax.swing.JTabbedPane jTabbedPane4;
     private javax.swing.JLabel lblInfoCPU;
     private javax.swing.JLabel lblInfoDisk;
     private javax.swing.JLabel lblInfoGPU;
@@ -628,14 +933,16 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JLabel lblLoadCPU;
     private javax.swing.JLabel lblLoadDisk;
     private javax.swing.JLabel lblLoadRAM;
-    private javax.swing.JLabel lblStatus;
+    private javax.swing.JLabel lblStatusDBConnection;
+    private javax.swing.JLabel lblStatusServer;
     private javax.swing.JTable tableClients;
+    private javax.swing.JTable tableErrors;
     private javax.swing.JTable tblProcesses;
     private javax.swing.JTextField txtIPAddress;
     private javax.swing.JTextField txtName;
     private javax.swing.JPasswordField txtPassword;
     private javax.swing.JTextField txtPort;
-    private javax.swing.JTextField txtTimeUpdate1;
+    private javax.swing.JTextField txtTimeUpdate;
     private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
 }
