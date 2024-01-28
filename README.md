@@ -54,6 +54,8 @@ java -jar Server.jar
 ![Server_Manager_NotStarted](Screenshots/Server_Manager_NotStarted.png)
 ![Server_Manager_Started](Screenshots/Server_Manager_Started.png)
 
+### DataBase ERD
+![DB_ERD](Screenshots/DB_ERD.png)
 
 ## Notes
 - Launching on windows is possible by double clicking on the jar file;
