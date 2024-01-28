@@ -41,6 +41,20 @@ java -jar Server.jar
 - Establish a connection with the database;
 - Start the server.
 
+## Screenshots
+### Client
+![Client_Information](Screenshots/Client_Information.png)
+![Client_Process](Screenshots/Client_Process.png)
+
+### Server
+![Server_Information](Screenshots/Server_Information.png)
+![Server_Processes](Screenshots/Server_Processes.png)
+![Server_Clients](Screenshots/Server_Clients.png)
+![Server_Error](Screenshots/Server_Error.png)
+![Server_Manager_NotStarted](Screenshots/Server_Manager_NotStarted.png)
+![Server_Manager_Started](Screenshots/Server_Manager_Started.png)
+
+
 ## Notes
 - Launching on windows is possible by double clicking on the jar file;
 - On Windows, when the client is launched by double-clicking, information exchange with the server will be unavailable.
