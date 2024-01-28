@@ -6,6 +6,7 @@ import DataExchange.LoadInfo;
 import PostgreDB.ManagerDB;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.Date;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.management.JMX;
@@ -57,15 +58,19 @@ public class Controller {
     
     public void ServerStart(int minutes)
     {       
-        if(timer == null)
-        {
-            timer = new Timer(minutes * MS_IN_SEC * SEC_IN_MIN , e -> {
-                TimerFunction();
-            });
-        }
+        if(timer != null)
+            return;
         
         isActiveServer = true;
         System.out.println("The server is running!");
+        
+        new Thread(() -> {
+            TimerFunction();
+        }).start(); //Forced initial information collection call
+        
+        timer = new Timer(minutes * MS_IN_SEC * SEC_IN_MIN , e -> {
+            TimerFunction();
+        });
         timer.start();
     }
     
@@ -88,7 +93,7 @@ public class Controller {
             } catch (SQLException | MalformedObjectNameException ex) {
                 Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
             } catch (IOException ex) {
-                modelErrors.addRow(new Object[] {ipAddress, ex.getLocalizedMessage()});
+                modelErrors.addRow(new Object[] {new Date(), ipAddress, ex.getLocalizedMessage()});
             }
         }
     }

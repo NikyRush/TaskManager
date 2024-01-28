@@ -444,11 +444,11 @@ public class MainWindow extends javax.swing.JFrame {
 
             },
             new String [] {
-                "ipAddress", "ErrorMessage"
+                "DateTime Query", "ipAddress", "ErrorMessage"
             }
         ) {
             Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
+                java.lang.String.class, java.lang.String.class, java.lang.String.class
             };
 
             public Class getColumnClass(int columnIndex) {
