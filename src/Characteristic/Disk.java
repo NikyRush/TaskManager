@@ -5,7 +5,6 @@ import java.nio.file.FileStore;
 import java.nio.file.FileSystems;
 import oshi.SystemInfo;
 import oshi.hardware.HWDiskStore;
-import oshi.util.FormatUtil;
 
 /**
  *

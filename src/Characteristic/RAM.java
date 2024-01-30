@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import oshi.SystemInfo;
 import oshi.hardware.GlobalMemory;
 import oshi.hardware.PhysicalMemory;
-import oshi.util.FormatUtil;
 
 /**
  *
