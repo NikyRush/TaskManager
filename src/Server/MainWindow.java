@@ -1,12 +1,15 @@
 package Server;
 
+import Characteristic.ProcessInfo;
+import DataExchange.HardwareInfo;
+import DataExchange.LoadInfo;
 import PostgreDB.ManagerDB;
 import java.awt.Color;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
-
 
 /**
  *
@@ -17,12 +20,15 @@ public class MainWindow extends javax.swing.JFrame {
     private final ManagerDB managerDB;
     DefaultTableModel clientsTableModel, processesTableModel, errorsTableModel;
     DefaultComboBoxModel clientsComboModel, queryComboModel;
-    
+    InformationTab informationTab;
     /**
      * Creates new form MainWindow
      */
     public MainWindow() {
         initComponents();
+        
+        managerDB = new ManagerDB();
+        informationTab = new InformationTab(this);
         
         clientsTableModel = (DefaultTableModel)tableClients.getModel();
         processesTableModel = (DefaultTableModel)tblProcesses.getModel();
@@ -32,7 +38,6 @@ public class MainWindow extends javax.swing.JFrame {
         queryComboModel = (DefaultComboBoxModel)cbTimeQuery.getModel();
         
         controller = Controller.getInstance(clientsTableModel, errorsTableModel);
-        managerDB = new ManagerDB();
     }
 
     /**
@@ -393,7 +398,6 @@ public class MainWindow extends javax.swing.JFrame {
             .addGroup(jPanel3Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 562, Short.MAX_VALUE)
                     .addGroup(jPanel3Layout.createSequentialGroup()
                         .addGap(82, 82, 82)
                         .addComponent(btnAddClient)
@@ -415,12 +419,12 @@ public class MainWindow extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(txtName, javax.swing.GroupLayout.DEFAULT_SIZE, 147, Short.MAX_VALUE)))
                 .addContainerGap())
+            .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING)
         );
         jPanel3Layout.setVerticalGroup(
             jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 294, Short.MAX_VALUE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 300, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
@@ -693,58 +697,15 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_btnSetConnectionActionPerformed
 
+    
+    //Выбор времени запроса
     private void cbTimeQueryItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbTimeQueryItemStateChanged
-        if(cbClientIP.getSelectedItem() == null || cbTimeQuery.getSelectedItem() == null)
-        {
-            processesTableModel.setRowCount(0);
-            return;
-        }
-        
-        try {
-            managerDB.getClientWorkLoad(cbClientIP.getSelectedItem().toString(),
-                cbTimeQuery.getSelectedItem().toString(),
-                lblLoadCPU, lblLoadRAM, lblLoadDisk);
-            
-            managerDB.getClientListProcess(processesTableModel,
-                cbClientIP.getSelectedItem().toString(),
-                cbTimeQuery.getSelectedItem().toString());
-            
-            DBMessage("", "Connected", Color.MAGENTA);
-
-        } catch (SQLException ex) {
-            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
-        }
+        informationTab.getClientWorkLoad(cbClientIP.getSelectedItem(), cbTimeQuery.getSelectedItem());
     }//GEN-LAST:event_cbTimeQueryItemStateChanged
 
+    //Выбор IP Клиента
     private void cbClientIPItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbClientIPItemStateChanged
-        if(cbClientIP.getSelectedItem() == null)
-        {
-            queryComboModel.removeAllElements();
-            lblInfoCPU.setText("");
-            lblInfoRAM.setText("");
-            lblInfoDisk.setText("");
-            lblInfoGPU.setText("");
-            
-            lblLoadCPU.setText("");
-            lblLoadRAM.setText("");
-            lblLoadDisk.setText("");
-
-            processesTableModel.setRowCount(0);
-            
-            return;
-
-        }
-        
-        try {
-            managerDB.getListQuery(queryComboModel, cbClientIP.getSelectedItem().toString());
-            managerDB.getClientHardWareInfo(cbClientIP.getSelectedItem().toString(),
-                lblInfoCPU, lblInfoRAM, lblInfoGPU, lblInfoDisk);
-            
-            DBMessage("", "Connected", Color.MAGENTA);
-
-        } catch (SQLException ex) {
-            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
-        }
+        informationTab.getClientInfo(cbClientIP.getSelectedItem());
     }//GEN-LAST:event_cbClientIPItemStateChanged
 
     private void btnStartServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartServerActionPerformed
@@ -795,7 +756,6 @@ public class MainWindow extends javax.swing.JFrame {
             managerDB.deleteClient(oldIpAddress);
             managerDB.getListClient(clientsTableModel, clientsComboModel);
             DBMessage("", "Connected", Color.MAGENTA);
-            
             
             btnStopServerActionPerformed(null);
 
@@ -854,7 +814,7 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_tableClientsMouseClicked
 
     private void btnClearAllErrorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearAllErrorsActionPerformed
-        errorsTableModel.setRowCount(0);
+        errorsTableModel.setRowCount(0); //Очистка таблицы
     }//GEN-LAST:event_btnClearAllErrorsActionPerformed
     
     private void DBMessage(String message, String status, Color color)
@@ -968,4 +928,92 @@ public class MainWindow extends javax.swing.JFrame {
     private javax.swing.JTextField txtTimeUpdate;
     private javax.swing.JTextField txtUserName;
     // End of variables declaration//GEN-END:variables
+    
+    public ManagerDB getManagerDB()
+    {
+        return managerDB;
+    }
+    
+    //Information TAB
+    public void setHardarwareInfo(HardwareInfo hardwareInfo)
+    {
+        lblInfoCPU.setText(hardwareInfo.getInfoCPU());
+        lblInfoGPU.setText(hardwareInfo.getInfoGPU());
+        lblInfoRAM.setText(hardwareInfo.getInfoRAM());
+        lblInfoDisk.setText(hardwareInfo.getInfoDisk());
+    }
+    
+    public void setLoadInfo(LoadInfo loadInfo)
+    {
+        lblLoadCPU.setText(loadInfo.getLoadCPU() + "%");
+        lblLoadRAM.setText(loadInfo.getLoadRAM() + " Gb");
+        lblLoadDisk.setText(loadInfo.getLoadDisk() + " Gb");
+        
+        setProcessTable(loadInfo.getListProcessInfo());
+    }
+    
+    public void setComboIP(ArrayList<String> listIP)
+    {
+        clientsComboModel.removeAllElements();
+        
+        for(var element: listIP)
+            clientsComboModel.addElement(element);
+    }
+    
+    public void setComboQuery(ArrayList<String> listQuery)
+    {
+        queryComboModel.removeAllElements();
+        
+        for(var element: listQuery)
+            queryComboModel.addElement(element);
+    }
+    
+    public void ClearClientInfo()
+    {
+        queryComboModel.removeAllElements();
+        lblInfoCPU.setText("");
+        lblInfoRAM.setText("");
+        lblInfoDisk.setText("");
+        lblInfoGPU.setText("");
+    }
+    
+    public void ClearClientWorkLoad()
+    {
+        lblLoadCPU.setText("");
+        lblLoadRAM.setText("");
+        lblLoadDisk.setText("");
+
+        ClearProcessesTable();
+    }
+    
+    //Process TAB
+    private void setProcessTable(ArrayList<ProcessInfo> listProcessInfo)
+    {
+        ClearProcessesTable();
+        
+        Object[] rowData = new Object[4]; //4 = Count field in ProcessInfo
+        
+        for(var processInfo: listProcessInfo)
+        {
+            rowData[0] = processInfo.getPID();
+            rowData[1] = processInfo.getName();
+            rowData[2] = processInfo.getCpuLoadPercent();
+            rowData[3] = processInfo.getRamUsed();
+
+            processesTableModel.addRow(rowData);
+        }
+    }
+    
+    public void ClearProcessesTable()
+    {
+        processesTableModel.setRowCount(0); //Clear table
+    }
+    
+    //Server Manager TAB
+    public void setDBMessage(String message, String status, Color color)
+    {
+        areaDBMassage.setText(message);
+        lblStatusDBConnection.setText(status);
+        lblStatusDBConnection.setForeground(color);
+    }
 }

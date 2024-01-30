@@ -7,11 +7,22 @@ import java.io.Serializable;
  * @author Admin
  */
 public class ProcessInfo implements Serializable{
-    private final int pid;
-    private final String name;
-    private final double cpuLoadPercent;
-    private final double ramUsed;
+    private int pid;
+    private String name;
+    private double cpuLoadPercent;
+    private double ramUsed;
 
+    //Default constructor
+    public ProcessInfo(){}
+
+    //Only for Processes
+    public ProcessInfo(int pid, String name, double cpuLoadPercent, long ramUsed) {
+        this.pid = pid;
+        this.name = name;
+        this.cpuLoadPercent = CONST.Round(cpuLoadPercent);
+        this.ramUsed = CONST.BytesToMegabytes(ramUsed);
+    }
+    
     public int getPID() {
         return pid;
     }
@@ -28,10 +39,20 @@ public class ProcessInfo implements Serializable{
         return ramUsed;
     }
 
-    public ProcessInfo(int pid, String name, double cpuLoadPercent, long ramUsed) {
+    public void setPid(int pid) {
         this.pid = pid;
-        this.name = name;
-        this.cpuLoadPercent = CONST.Round(cpuLoadPercent);
-        this.ramUsed = CONST.BytesToMegabytes(ramUsed);
     }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCpuLoadPercent(double cpuLoadPercent) {
+        this.cpuLoadPercent = cpuLoadPercent;
+    }
+
+    public void setRamUsed(double ramUsed) {
+        this.ramUsed = ramUsed;
+    }
+    
 }

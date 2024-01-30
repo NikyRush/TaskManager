@@ -9,13 +9,6 @@ import java.io.Serializable;
 public class HardwareInfo implements Serializable{
     String infoCPU, infoDisk, infoRAM, infoGPU;
 
-    public HardwareInfo(String infoCPU, String infoDisk, String infoRAM, String infoGPU) {
-        this.infoCPU = infoCPU;
-        this.infoDisk = infoDisk;
-        this.infoRAM = infoRAM;
-        this.infoGPU = infoGPU;
-    }
-
     public String getInfoCPU() {
         return infoCPU;
     }
@@ -31,6 +24,21 @@ public class HardwareInfo implements Serializable{
     public String getInfoGPU() {
         return infoGPU;
     }
-    
-    
+
+    public void setInfoCPU(String infoCPU) {
+        this.infoCPU = infoCPU;
+    }
+
+    public void setInfoDisk(String infoDisk) {
+        this.infoDisk = infoDisk;
+    }
+
+    public void setInfoRAM(String infoRAM) {
+        this.infoRAM = infoRAM;
+    }
+
+    public void setInfoGPU(String infoGPU) {
+        this.infoGPU = infoGPU;
+    }
+       
 }

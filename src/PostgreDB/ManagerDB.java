@@ -1,7 +1,6 @@
 
 package PostgreDB;
 
-import Characteristic.CONST;
 import Characteristic.ProcessInfo;
 import DataExchange.HardwareInfo;
 import DataExchange.LoadInfo;
@@ -11,8 +10,8 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JLabel;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -84,9 +83,7 @@ public class ManagerDB {
         statement.close();
     }
 
-    public void getListQuery( DefaultComboBoxModel cb, String ipClient) throws SQLException {
-        cb.removeAllElements();
-        
+    public ArrayList<String> getListQuery(String ipClient) throws SQLException {     
         String query = String.format("select %s from %s where %s = "
                     + "(select %s from %s where %s = '%s')",
                     TableQuery.COLUMN_DATE_TIME,
@@ -99,16 +96,17 @@ public class ManagerDB {
         
         statement = con.createStatement();
         ResultSet rs = statement.executeQuery(query);
+        ArrayList<String> listQuery = new ArrayList<>();
+        
         while(rs.next())
-        {
-            cb.addElement(rs.getString(TableQuery.COLUMN_DATE_TIME));
-        }
+            listQuery.add(rs.getString(TableQuery.COLUMN_DATE_TIME));
+        
         statement.close();
+        
+        return listQuery;
     }
 
-    public void getClientHardWareInfo(String ipClient, JLabel lblInfoCPU,
-            JLabel lblInfoRAM, JLabel lblInfoGPU, JLabel lblInfoDisk) throws SQLException {
-
+    public HardwareInfo getClientHardWareInfo(String ipClient) throws SQLException {
         String query = String.format("select %s,%s,%s,%s from %s where %s = '%s'",
                     TableClient.COLUMN_CPU_INFO,
                     TableClient.COLUMN_RAM_INFO,
@@ -120,22 +118,23 @@ public class ManagerDB {
         
         statement = con.createStatement();
         ResultSet rs = statement.executeQuery(query);
+        
+        HardwareInfo hardwareInfo = new HardwareInfo();
         while(rs.next())
         {
-            lblInfoCPU.setText(rs.getString(TableClient.COLUMN_CPU_INFO));
-            lblInfoRAM.setText(rs.getString(TableClient.COLUMN_RAM_INFO));
-            lblInfoGPU.setText(rs.getString(TableClient.COLUMN_GPU_INFO));
-            lblInfoDisk.setText(rs.getString(TableClient.COLUMN_DISK_INFO));
+            hardwareInfo.setInfoCPU(rs.getString(TableClient.COLUMN_CPU_INFO));
+            hardwareInfo.setInfoGPU(rs.getString(TableClient.COLUMN_GPU_INFO));
+            hardwareInfo.setInfoRAM(rs.getString(TableClient.COLUMN_RAM_INFO));
+            hardwareInfo.setInfoDisk(rs.getString(TableClient.COLUMN_DISK_INFO));
         }
+        
         statement.close();
+        return hardwareInfo;
     }
 
-    public void getClientWorkLoad(String ipClient, String timeQuery,
-            JLabel lblLoadCPU, JLabel lblLoadRAM, JLabel lblLoadDisk) throws SQLException{
-
-        String query = String.format("select %s,%s,%s from %s where %s = "
+    public LoadInfo getClientWorkLoad(String ipClient, String timeQuery) throws SQLException{
+        String query = String.format("select %s,%s from %s where %s = "
                 + "(select %s from %s where %s = '%s') and %s = '%s'",
-                    TableQuery.COLUMN_CPU_LOAD_PERCENT,
                     TableQuery.COLUMN_RAM_LOAD_GB,
                     TableQuery.COLUMN_DISK_LOAD_GB,
                     TableQuery.TABLE_NAME,
@@ -149,26 +148,19 @@ public class ManagerDB {
         
         statement = con.createStatement();
         ResultSet rs = statement.executeQuery(query);
-        Double cpu, ram, disk;
+        LoadInfo loadInfo = new LoadInfo();
+        
         while(rs.next())
         {
-            cpu = CONST.Round(rs.getDouble(TableQuery.COLUMN_CPU_LOAD_PERCENT));
-            ram = CONST.Round(rs.getDouble(TableQuery.COLUMN_RAM_LOAD_GB));
-            disk = CONST.Round(rs.getDouble(TableQuery.COLUMN_DISK_LOAD_GB));
-
-            lblLoadCPU.setText(cpu + "%");
-            lblLoadRAM.setText(ram + " Gb");
-            lblLoadDisk.setText(disk + " Gb");
+            loadInfo.setLoadRAM(rs.getDouble(TableQuery.COLUMN_RAM_LOAD_GB));
+            loadInfo.setLoadDisk(rs.getDouble(TableQuery.COLUMN_DISK_LOAD_GB));
         }
         statement.close();
+        return loadInfo;
     }
 
-    public void getClientListProcess(DefaultTableModel model, String ipClient, String timeQuery) throws SQLException{
+    public ArrayList<ProcessInfo> getClientListProcess(String ipClient, String timeQuery) throws SQLException{
 
-        Object data[] = new Object[4];
-
-        model.setRowCount(0);
-                
         String query = String.format("select * from %s where %s = "
                 + "(select %s from %s where %s = '%s' and %s = "
                 + "(select %s from %s where %s = '%s'))", 
@@ -186,16 +178,21 @@ public class ManagerDB {
         
         statement = con.createStatement();
         ResultSet rs = statement.executeQuery(query);
+        
+        ArrayList<ProcessInfo> listProcessInfo = new ArrayList<>();
+        ProcessInfo processInfo;
         while(rs.next())
         {
-            data[0] = rs.getInt(TableProcess.COLUMN_PID);
-            data[1] = rs.getString(TableProcess.COLUMN_NAME);
-            data[2] = rs.getDouble(TableProcess.COLUMN_CPU_LOAD_PERCENT);
-            data[3] = rs.getDouble(TableProcess.COLUMN_RAM_LOAD_MB);
+            processInfo = new ProcessInfo();
+            processInfo.setPid(rs.getInt(TableProcess.COLUMN_PID));
+            processInfo.setName(rs.getString(TableProcess.COLUMN_NAME));
+            processInfo.setCpuLoadPercent(rs.getDouble(TableProcess.COLUMN_CPU_LOAD_PERCENT));
+            processInfo.setRamUsed(rs.getDouble(TableProcess.COLUMN_RAM_LOAD_MB));
 
-            model.addRow(data);
+            listProcessInfo.add(processInfo);
         }
         statement.close();
+        return listProcessInfo;
     }
 
     public void insertClient(String ipAddress, String port, String name) throws SQLException {
@@ -334,7 +331,7 @@ public class ManagerDB {
 
         statement.close();
         
-        for(ProcessInfo process: loadInfo.getProcesses())
+        for(ProcessInfo process: loadInfo.getListProcessInfo())
         {
             query = String.format("insert into %s (%s,%s,%s,%s,%s) values ('%s','%s','%s','%s','%s')",
                 TableProcess.TABLE_NAME,

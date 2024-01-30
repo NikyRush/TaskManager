@@ -1,5 +1,6 @@
 package DataExchange;
 
+import Characteristic.CONST;
 import Characteristic.ProcessInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -10,19 +11,13 @@ import java.util.ArrayList;
  */
 public class LoadInfo implements Serializable{
     double loadRAM, loadDisk;
-    ArrayList<ProcessInfo> processes;
-
-    public LoadInfo(double loadRAM, double loadDisk, ArrayList<ProcessInfo> processes) {
-        this.loadRAM = loadRAM;
-        this.loadDisk = loadDisk;
-        this.processes = processes;
-    }
+    ArrayList<ProcessInfo> listProcessInfo;
 
     public double getLoadCPU() {
         Double load = 0.0;
-        for(ProcessInfo process: processes)
+        for(ProcessInfo process: listProcessInfo)
             load += process.getCpuLoadPercent();
-        return load;
+        return CONST.Round(load);
     }
 
     public double getLoadRAM() {
@@ -33,8 +28,19 @@ public class LoadInfo implements Serializable{
         return loadDisk;
     }
 
-    public ArrayList<ProcessInfo> getProcesses() {
-        return processes;
+    public ArrayList<ProcessInfo> getListProcessInfo() {
+        return listProcessInfo;
     }
-    
+
+    public void setLoadRAM(double loadRAM) {
+        this.loadRAM = CONST.Round(loadRAM);
+    }
+
+    public void setLoadDisk(double loadDisk) {
+        this.loadDisk = CONST.Round(loadDisk);
+    }
+
+    public void setListProcessInfo(ArrayList<ProcessInfo> listProcessInfo) {
+        this.listProcessInfo = listProcessInfo;
+    }
 }

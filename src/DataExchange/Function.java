@@ -15,21 +15,25 @@ public class Function implements FunctionMBean{
     
     @Override
     public HardwareInfo returnHardwareInfo() {
-        return new HardwareInfo(
-        controller.getCPU().getInfo(),
-        controller.getDisk().getInfo(),
-        controller.getRAM().getInfo(),
-        controller.getGPU().getInfo()
-        );
+        HardwareInfo hardwareInfo = new HardwareInfo();
+        
+        hardwareInfo.setInfoCPU(controller.getCPU().getInfo());
+        hardwareInfo.setInfoGPU(controller.getGPU().getInfo());
+        hardwareInfo.setInfoRAM(controller.getRAM().getInfo());
+        hardwareInfo.setInfoDisk(controller.getDisk().getInfo());
+
+        return hardwareInfo;
     }
 
     @Override
     public LoadInfo returnLoadInfo() {
-        return new LoadInfo(
-            controller.getRAM().getUsedSpace(),
-            controller.getDisk().getUsedSpace(),
-            controller.getProcesses()
-        );
+        LoadInfo loadInfo =  new LoadInfo();
+        
+        loadInfo.setLoadRAM(controller.getRAM().getUsedSpace());
+        loadInfo.setLoadDisk(controller.getDisk().getUsedSpace());
+        loadInfo.setListProcessInfo(controller.getProcesses());
+        
+        return loadInfo;
     }
     
 }
