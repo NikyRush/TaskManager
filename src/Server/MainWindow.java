@@ -21,6 +21,8 @@ public class MainWindow extends javax.swing.JFrame {
     DefaultTableModel clientsTableModel, processesTableModel, errorsTableModel;
     DefaultComboBoxModel clientsComboModel, queryComboModel;
     InformationTab informationTab;
+    ClientsTab clientsTab;
+    
     /**
      * Creates new form MainWindow
      */
@@ -29,6 +31,7 @@ public class MainWindow extends javax.swing.JFrame {
         
         managerDB = new ManagerDB();
         informationTab = new InformationTab(this);
+        clientsTab = new ClientsTab(this);
         
         clientsTableModel = (DefaultTableModel)tableClients.getModel();
         processesTableModel = (DefaultTableModel)tblProcesses.getModel();
@@ -690,7 +693,7 @@ public class MainWindow extends javax.swing.JFrame {
             controller.getConnectionDB(txtUserName.getText(), txtPassword.getText(), txtDBName.getText());
             DBMessage("Successful connection", "Connected", Color.MAGENTA);
 
-            managerDB.getListClient(clientsTableModel, clientsComboModel);
+            clientsTab.getClients();
 
         } catch (SQLException ex) {
             DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
@@ -750,61 +753,34 @@ public class MainWindow extends javax.swing.JFrame {
     private void btnDeleteClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteClientActionPerformed
         if(!managerDB.isConnected() || tableClients.getSelectedRowCount() != 1)
             return;
-
-        try{
-            String oldIpAddress = clientsTableModel.getValueAt(tableClients.getSelectedRow(), 1).toString();
-            managerDB.deleteClient(oldIpAddress);
-            managerDB.getListClient(clientsTableModel, clientsComboModel);
-            DBMessage("", "Connected", Color.MAGENTA);
-            
-            btnStopServerActionPerformed(null);
-
-        }catch(SQLException ex){
-            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
-        }
+        String IP = clientsTableModel.getValueAt(tableClients.getSelectedRow(), 1).toString();
+        clientsTab.DeleteClient(IP);
+        btnStopServerActionPerformed(null);
     }//GEN-LAST:event_btnDeleteClientActionPerformed
 
     private void btnSaveChangeClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSaveChangeClientActionPerformed
-        String ipAddress, port, name;
-        ipAddress = txtIPAddress.getText();
+        String oldIP, IP, port, name;
+        oldIP = clientsTableModel.getValueAt(tableClients.getSelectedRow(), 1).toString();
+        IP = txtIPAddress.getText();
         port = txtPort.getText();
         name = txtName.getText();
-
-        if(!managerDB.isConnected() || ipAddress.isEmpty() || port.isEmpty() || name.isEmpty() || tableClients.getSelectedRowCount() != 1)
+        
+        if(tableClients.getSelectedRowCount() != 1)
             return;
-
-        try{
-            String oldIpAddress = clientsTableModel.getValueAt(tableClients.getSelectedRow(), 1).toString();
-            managerDB.updateClient(oldIpAddress, ipAddress, port, name);
-            managerDB.getListClient(clientsTableModel, clientsComboModel);
-            
-            DBMessage("", "Connected", Color.MAGENTA);
-            
-            
-            btnStopServerActionPerformed(null);
-                    
-        }catch(SQLException ex){
-            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
-        }
+        
+        clientsTab.UpdateClient(oldIP, name, IP, port);
+        btnStopServerActionPerformed(null);
     }//GEN-LAST:event_btnSaveChangeClientActionPerformed
 
     private void btnAddClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnAddClientActionPerformed
-        String ipAddress, port, name;
-        ipAddress = txtIPAddress.getText();
+        String IP, port, name;
+        IP = txtIPAddress.getText();
         port = txtPort.getText();
         name = txtName.getText();
 
-        if(!managerDB.isConnected() || ipAddress.isEmpty() || port.isEmpty() || name.isEmpty())
-            return;
-        try{
-            managerDB.insertClient(ipAddress, port, name);
-            managerDB.getListClient(clientsTableModel, clientsComboModel);
-            DBMessage("", "Connected", Color.MAGENTA);
-            
-            btnStopServerActionPerformed(null);
-        }catch(SQLException ex){
-            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
-        }
+        clientsTab.InsertClient(name, IP, port);
+        
+        btnStopServerActionPerformed(null);
     }//GEN-LAST:event_btnAddClientActionPerformed
 
     private void tableClientsMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableClientsMouseClicked
@@ -949,20 +925,20 @@ public class MainWindow extends javax.swing.JFrame {
         lblLoadRAM.setText(loadInfo.getLoadRAM() + " Gb");
         lblLoadDisk.setText(loadInfo.getLoadDisk() + " Gb");
         
-        setProcessTable(loadInfo.getListProcessInfo());
+        setTableProcess(loadInfo.getListProcessInfo());
     }
     
-    public void setComboIP(ArrayList<String> listIP)
+    public void setComboIP(ArrayList<Client> listClient)
     {
-        clientsComboModel.removeAllElements();
+        ClearComboIP();
         
-        for(var element: listIP)
-            clientsComboModel.addElement(element);
+        for(var client: listClient)
+            clientsComboModel.addElement(client.getIp());
     }
     
     public void setComboQuery(ArrayList<String> listQuery)
     {
-        queryComboModel.removeAllElements();
+        ClearComboQuery();
         
         for(var element: listQuery)
             queryComboModel.addElement(element);
@@ -970,11 +946,11 @@ public class MainWindow extends javax.swing.JFrame {
     
     public void ClearClientInfo()
     {
-        queryComboModel.removeAllElements();
         lblInfoCPU.setText("");
         lblInfoRAM.setText("");
         lblInfoDisk.setText("");
         lblInfoGPU.setText("");
+        ClearComboIP();
     }
     
     public void ClearClientWorkLoad()
@@ -983,13 +959,23 @@ public class MainWindow extends javax.swing.JFrame {
         lblLoadRAM.setText("");
         lblLoadDisk.setText("");
 
-        ClearProcessesTable();
+        ClearTableProcesses();
+    }
+    
+    public void ClearComboIP()
+    {
+        clientsComboModel.removeAllElements();
+    }
+    
+    public void ClearComboQuery()
+    {
+        queryComboModel.removeAllElements();
     }
     
     //Process TAB
-    private void setProcessTable(ArrayList<ProcessInfo> listProcessInfo)
+    private void setTableProcess(ArrayList<ProcessInfo> listProcessInfo)
     {
-        ClearProcessesTable();
+        ClearTableProcesses();
         
         Object[] rowData = new Object[4]; //4 = Count field in ProcessInfo
         
@@ -1004,11 +990,34 @@ public class MainWindow extends javax.swing.JFrame {
         }
     }
     
-    public void ClearProcessesTable()
+    public void ClearTableProcesses()
     {
         processesTableModel.setRowCount(0); //Clear table
     }
     
+    //ClientsTab
+    public void setTableClients(ArrayList<Client> listClient)
+    {
+        ClearTableClients();
+        Object[] rowData = new Object[3]; //3 = Count field in TableClients
+        
+        for(var client: listClient)
+        {
+            rowData[0] = client.getName();
+            rowData[1] = client.getIp();
+            rowData[2] = client.getPort();
+
+            clientsTableModel.addRow(rowData);
+        }
+        
+        setComboIP(listClient);
+    }
+    
+    public void ClearTableClients()
+    {
+        clientsTableModel.setRowCount(0); //Clear table
+    }
+
     //Server Manager TAB
     public void setDBMessage(String message, String status, Color color)
     {

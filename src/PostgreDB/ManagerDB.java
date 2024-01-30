@@ -5,14 +5,13 @@ import Characteristic.ProcessInfo;
 import DataExchange.HardwareInfo;
 import DataExchange.LoadInfo;
 import static PostgreDB.StructureDB.*;
+import Server.Client;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import javax.swing.DefaultComboBoxModel;
-import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -36,7 +35,6 @@ public class ManagerDB {
         return (con != null);
     }
     
- 
     private void CreateTables() throws SQLException
     {
         CreateTable(SQL_CREATE_CLIENT);
@@ -51,13 +49,8 @@ public class ManagerDB {
         statement.close();
     }
     
-    public void getListClient(DefaultTableModel model, DefaultComboBoxModel cb) throws SQLException
-    {
-        Object data[] = new Object[3];
-
-        model.setRowCount(0);
-        cb.removeAllElements();
-                
+    public ArrayList<Client> getListClient() throws SQLException
+    {   
         String query = String.format("select %s,%s,%s from %s",
                                     TableClient.COLUMN_IP, 
                                     TableClient.COLUMN_PORT,
@@ -66,21 +59,20 @@ public class ManagerDB {
         
         statement = con.createStatement();
         ResultSet rs = statement.executeQuery(query);
-        
-        String ipAddress;
+        ArrayList<Client> listClient = new ArrayList<>();
+        Client client;
         
         while(rs.next())
         {
-            ipAddress = rs.getString(TableClient.COLUMN_IP);
-
-            data[0] = rs.getString(TableClient.COLUMN_NAME);
-            data[1] = ipAddress;
-            data[2] = rs.getInt(TableClient.COLUMN_PORT);
-
-            cb.addElement(ipAddress);
-            model.addRow(data);
+            client = new Client();
+            client.setName(rs.getString(TableClient.COLUMN_NAME));
+            client.setIp(rs.getString(TableClient.COLUMN_IP));
+            client.setPort(rs.getInt(TableClient.COLUMN_PORT));
+            listClient.add(client);
         }
         statement.close();
+        
+        return listClient;
     }
 
     public ArrayList<String> getListQuery(String ipClient) throws SQLException {     
@@ -195,7 +187,7 @@ public class ManagerDB {
         return listProcessInfo;
     }
 
-    public void insertClient(String ipAddress, String port, String name) throws SQLException {
+    public void insertClient(String name, String ipAddress, String port) throws SQLException {
         String query = String.format("insert into %s (%s,%s,%s) values ('%s','%s','%s')", 
                 TableClient.TABLE_NAME,
                 TableClient.COLUMN_IP,
@@ -351,7 +343,4 @@ public class ManagerDB {
             statement.close();
         }
     }
-
-
-
 }
