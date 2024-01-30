@@ -11,6 +11,7 @@ A task manager with a client-server implementation for remote monitoring of clie
 - Linux
 
 ## Getting started
+- Go to the v1 branch;
 - Download the project to your PC;
 - Unzip the archive if you downloaded the zip file;
 - (Server) Install postgreSQL [https://www.postgresql.org/download/]
