@@ -11,7 +11,6 @@ A task manager with a client-server implementation for remote monitoring of clie
 - Linux
 
 ## Getting started
-- Go to the v1 branch;
 - Download the project to your PC;
 - Unzip the archive if you downloaded the zip file;
 - (Server) Install postgreSQL [https://www.postgresql.org/download/]
@@ -60,4 +59,7 @@ java -jar Server.jar
 
 ## Notes
 - Launching on windows is possible by double clicking on the jar file;
-- On Windows, when the client is launched by double-clicking, information exchange with the server will be unavailable.
+- On Windows, when the client is launched by double-clicking, information exchange with the server will be unavailable;
+- At the moment, errors are not entered into the database, they are only displayed on the 'Error' tab on the server;
+- The difference between v1 and master branches is only in the structure of the code. The master branch contains a new structure.
+
