@@ -5,7 +5,7 @@ import Characteristic.ProcessInfo;
 import DataExchange.HardwareInfo;
 import DataExchange.LoadInfo;
 import static PostgreDB.StructureDB.*;
-import Server.Client;
+import Server.ClientInfo;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
@@ -49,7 +49,7 @@ public class ManagerDB {
         statement.close();
     }
     
-    public ArrayList<Client> getListClient() throws SQLException
+    public ArrayList<ClientInfo> getListClient() throws SQLException
     {   
         String query = String.format("select %s,%s,%s from %s",
                                     TableClient.COLUMN_IP, 
@@ -59,12 +59,12 @@ public class ManagerDB {
         
         statement = con.createStatement();
         ResultSet rs = statement.executeQuery(query);
-        ArrayList<Client> listClient = new ArrayList<>();
-        Client client;
+        ArrayList<ClientInfo> listClient = new ArrayList<>();
+        ClientInfo client;
         
         while(rs.next())
         {
-            client = new Client();
+            client = new ClientInfo();
             client.setName(rs.getString(TableClient.COLUMN_NAME));
             client.setIp(rs.getString(TableClient.COLUMN_IP));
             client.setPort(rs.getInt(TableClient.COLUMN_PORT));

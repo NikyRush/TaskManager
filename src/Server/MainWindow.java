@@ -5,10 +5,8 @@ import DataExchange.HardwareInfo;
 import DataExchange.LoadInfo;
 import PostgreDB.ManagerDB;
 import java.awt.Color;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
-import javax.swing.JOptionPane;
 import javax.swing.table.DefaultTableModel;
 
 /**
@@ -16,13 +14,12 @@ import javax.swing.table.DefaultTableModel;
  * @author Admin
  */
 public class MainWindow extends javax.swing.JFrame {
-    private final Controller controller;
     private final ManagerDB managerDB;
     DefaultTableModel clientsTableModel, processesTableModel, errorsTableModel;
     DefaultComboBoxModel clientsComboModel, queryComboModel;
     InformationTab informationTab;
     ClientsTab clientsTab;
-    
+    ServerManagerTab serverTab;
     /**
      * Creates new form MainWindow
      */
@@ -32,6 +29,7 @@ public class MainWindow extends javax.swing.JFrame {
         managerDB = new ManagerDB();
         informationTab = new InformationTab(this);
         clientsTab = new ClientsTab(this);
+        serverTab = new ServerManagerTab(this);
         
         clientsTableModel = (DefaultTableModel)tableClients.getModel();
         processesTableModel = (DefaultTableModel)tblProcesses.getModel();
@@ -40,7 +38,6 @@ public class MainWindow extends javax.swing.JFrame {
         clientsComboModel = (DefaultComboBoxModel)cbClientIP.getModel();
         queryComboModel = (DefaultComboBoxModel)cbTimeQuery.getModel();
         
-        controller = Controller.getInstance(clientsTableModel, errorsTableModel);
     }
 
     /**
@@ -682,25 +679,19 @@ public class MainWindow extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnSetConnectionActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnSetConnectionActionPerformed
-        if(txtDBName.getText().isEmpty())
-        {
-            DBMessage("DB Name isEmpty!", "Error", Color.RED);
-            return;
-        }
+        String userName = txtUserName.getText(),
+               password = txtPassword.getText(),
+               dbName = txtDBName.getText();
         
-        try {
-            managerDB.getConnection(txtUserName.getText(), txtPassword.getText(), txtDBName.getText());
-            controller.getConnectionDB(txtUserName.getText(), txtPassword.getText(), txtDBName.getText());
-            DBMessage("Successful connection", "Connected", Color.MAGENTA);
-
+        if(serverTab.setConnectionDB(userName, password, dbName))
+        {
             clientsTab.getClients();
-
-        } catch (SQLException ex) {
-            DBMessage(ex.getLocalizedMessage(), "Error", Color.RED);
+            txtUserName.setText("");
+            txtPassword.setText("");
+            txtDBName.setText("");
         }
     }//GEN-LAST:event_btnSetConnectionActionPerformed
 
-    
     //Выбор времени запроса
     private void cbTimeQueryItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_cbTimeQueryItemStateChanged
         informationTab.getClientWorkLoad(cbClientIP.getSelectedItem(), cbTimeQuery.getSelectedItem());
@@ -712,42 +703,14 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_cbClientIPItemStateChanged
 
     private void btnStartServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStartServerActionPerformed
-        if(managerDB.isConnected())
-        {
-            if(clientsTableModel.getRowCount() == 0)
-            {
-                areaServerMessage.setText("Список клиентов пуст. Добавьте клиентов.");
-                return;
-            }
-            try
-            {
-                int minutes = Integer.parseInt(txtTimeUpdate.getText());
-                if(minutes > 0 && minutes < 999)
-                {
-                    controller.ServerStart(minutes);
-                    txtTimeUpdate.setEditable(false);
-                    lblStatusServer.setText("Started");
-                    lblStatusServer.setForeground(Color.MAGENTA);
-                    
-                    areaServerMessage.setText("Сервер успешно запущен!");
-                }
-                else
-                    areaServerMessage.setText("Неверный формат времени: (0;999)");
-
-            }catch(Exception ex)
-            {
-                areaServerMessage.setText("Неверный формат времени: (0;999)");
-            }
-        }
-        else
-            JOptionPane.showMessageDialog(null, "Set connection to DB!", "Failed start Server", JOptionPane.ERROR_MESSAGE);
+        int countClients = clientsTableModel.getRowCount();
+        String timeMinutes = txtTimeUpdate.getText();
+        if(serverTab.ServerStart(countClients, timeMinutes))
+            clientsTab.getClients();
     }//GEN-LAST:event_btnStartServerActionPerformed
 
     private void btnStopServerActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnStopServerActionPerformed
-        controller.ServerStop();
-        txtTimeUpdate.setEditable(true);
-        lblStatusServer.setText("Stoped");
-        areaServerMessage.setText("Сервер остановлен!");
+        serverTab.ServerStop();
     }//GEN-LAST:event_btnStopServerActionPerformed
 
     private void btnDeleteClientActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnDeleteClientActionPerformed
@@ -790,15 +753,8 @@ public class MainWindow extends javax.swing.JFrame {
     }//GEN-LAST:event_tableClientsMouseClicked
 
     private void btnClearAllErrorsActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnClearAllErrorsActionPerformed
-        errorsTableModel.setRowCount(0); //Очистка таблицы
+        ClearTableError();
     }//GEN-LAST:event_btnClearAllErrorsActionPerformed
-    
-    private void DBMessage(String message, String status, Color color)
-    {
-        areaDBMassage.setText(message);
-        lblStatusDBConnection.setText(status);
-        lblStatusDBConnection.setForeground(color);
-    }
     
     /**
      * @param args the command line arguments
@@ -928,7 +884,7 @@ public class MainWindow extends javax.swing.JFrame {
         setTableProcess(loadInfo.getListProcessInfo());
     }
     
-    public void setComboIP(ArrayList<Client> listClient)
+    public void setComboIP(ArrayList<ClientInfo> listClient)
     {
         ClearComboIP();
         
@@ -996,7 +952,7 @@ public class MainWindow extends javax.swing.JFrame {
     }
     
     //ClientsTab
-    public void setTableClients(ArrayList<Client> listClient)
+    public void setTableClients(ArrayList<ClientInfo> listClient)
     {
         ClearTableClients();
         Object[] rowData = new Object[3]; //3 = Count field in TableClients
@@ -1013,16 +969,45 @@ public class MainWindow extends javax.swing.JFrame {
         setComboIP(listClient);
     }
     
+    public DefaultTableModel getModelClients()
+    {
+        return clientsTableModel;
+    }
+    
     public void ClearTableClients()
     {
         clientsTableModel.setRowCount(0); //Clear table
     }
-
+    
+    //Error Tab
+    public void AddError(Object[] row)
+    {
+        errorsTableModel.addRow(row);
+    }
+    
+    public void ClearTableError()
+    {
+        errorsTableModel.setRowCount(0); //Очистка таблицы
+    }
+    
     //Server Manager TAB
+    public void setEditableTime(boolean flag)
+    {
+        txtTimeUpdate.setEditable(flag);
+    }
+    
     public void setDBMessage(String message, String status, Color color)
     {
         areaDBMassage.setText(message);
         lblStatusDBConnection.setText(status);
         lblStatusDBConnection.setForeground(color);
     }
+    
+    public void setServerMessage(String message, String status, Color color)
+    {
+        areaServerMessage.setText(message);
+        lblStatusServer.setText(status);
+        lblStatusServer.setForeground(color);
+    }
+    
 }
